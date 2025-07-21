@@ -1,0 +1,31 @@
+<!-- Search Section -->
+<section class="search-section" id="search">
+    <div class="container">
+        <h2 class="section-title">Search Lost & Found Items</h2>
+        <div class="search-container">
+            <div class="search-filters">
+                <select id="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="documents">Documents</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="books">Books</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="status-filter">
+                    <option value="">All Status</option>
+                    <option value="lost">Lost</option>
+                    <option value="found">Found</option>
+                </select>
+                <input type="date" id="date-filter" placeholder="Date">
+            </div>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search by item name, description, or location...">
+                <button class="search-btn" onclick="searchItems()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
