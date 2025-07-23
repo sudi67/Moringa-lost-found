@@ -1,10 +1,16 @@
-import React, { useContext, useState } from 'react';
-import { ItemContext } from '../context/ItemContext';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchItems } from '../store/slices/itemsSlice';
 import './ItemsGrid.css';
 
 const ItemsGrid = () => {
-  const { items, loading } = useContext(ItemContext);
+  const { items, loading, error } = useSelector((state) => state.items);
+  const dispatch = useDispatch();
   const [visibleItems, setVisibleItems] = useState(6);
+
+  useEffect(() => {
+    dispatch(fetchItems());
+  }, [dispatch]);
 
   const loadMoreItems = () => {
     setVisibleItems(prev => prev + 6);
@@ -15,6 +21,21 @@ const ItemsGrid = () => {
       <section className="items-section">
         <div className="container">
           <div className="loading">Loading items...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="items-section">
+        <div className="container">
+          <div className="error">
+            <p>Error: {error}</p>
+            <button className="btn btn-primary" onClick={() => dispatch(fetchItems())}>
+              Retry
+            </button>
+          </div>
         </div>
       </section>
     );
