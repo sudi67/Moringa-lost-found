@@ -1,5 +1,5 @@
 from datetime import datetime, UTC
-from . import db
+from app.extensions import db
 
 class Item(db.Model):
     __tablename__ = 'items'

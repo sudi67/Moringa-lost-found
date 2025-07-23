@@ -1,20 +1,21 @@
 from flask import Flask
-from app.models import db  # This imports db from models/__init__.py
+from app.extensions import db, jwt
 
-def create_app(config_name=None):
+def create_app(testing=False):
     app = Flask(__name__)
 
-    if config_name == 'testing':
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    # Load default config
+    app.config.from_object('config.Config')
+
+    # Apply testing config if testing=True
+    if testing:
         app.config['TESTING'] = True
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dev.db'
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['JWT_SECRET_KEY'] = 'test-secret-key'
 
+    # Initialize extensions
     db.init_app(app)
+    jwt.init_app(app)
 
-    with app.app_context():
-        db.create_all()
-
+    # DO NOT register blueprints or routes here
     return app

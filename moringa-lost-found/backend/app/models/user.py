@@ -1,5 +1,6 @@
 from datetime import datetime, UTC
-from . import db
+from app.extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -18,6 +19,12 @@ class User(db.Model):
     comments = db.relationship('Comment', backref='author', lazy=True)
     rewards_offered = db.relationship('Reward', backref='offered_by', lazy=True, foreign_keys='Reward.offered_by_id')
     rewards_received = db.relationship('Reward', backref='paid_to', lazy=True, foreign_keys='Reward.paid_to_id')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return f'<User {self.username}>'
