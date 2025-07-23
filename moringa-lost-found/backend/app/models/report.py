@@ -1,5 +1,5 @@
 from datetime import datetime, UTC
-from . import db
+from app.extensions import db
 
 # === Report Model ===
 class Report(db.Model):
