@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../store/slices/itemsSlice';
+import { setShowReportModal } from '../store/slices/uiSlice';
 import './ReportModal.css';
 
-const ReportModal = ({ onClose }) => {
+const ReportModal = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     type: '',
     category: '',
@@ -33,17 +37,25 @@ const ReportModal = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitting report:', formData);
-    // API integration will be added here
-    onClose();
+    
+    // Create item object for Redux
+    const newItem = {
+      ...formData,
+      id: Date.now(), // Temporary ID, will be replaced by backend
+      status: formData.type === 'lost' ? 'lost' : 'found',
+      image: imagePreview || null
+    };
+    
+    dispatch(addItem(newItem));
+    dispatch(setShowReportModal(false));
   };
 
   return (
-    <div className="modal" onClick={onClose}>
+    <div className="modal" onClick={() => dispatch(setShowReportModal(false))}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Report Lost/Found Item</h2>
-          <span className="close" onClick={onClose}>&times;</span>
+          <span className="close" onClick={() => dispatch(setShowReportModal(false))}>&times;</span>
         </div>
         
         <form onSubmit={handleSubmit}>

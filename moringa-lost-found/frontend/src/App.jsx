@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import './App.css';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -6,25 +7,32 @@ import SearchSection from './components/SearchSection';
 import ItemsGrid from './components/ItemsGrid';
 import ReportModal from './components/ReportModal';
 import Footer from './components/Footer';
-import { ItemProvider } from './context/ItemContext';
+import { setShowReportModal } from './store/slices/uiSlice';
 
 function App() {
-  const [showReportModal, setShowReportModal] = useState(false);
+  const showReportModal = useSelector((state) => state.ui.showReportModal);
+  const dispatch = useDispatch();
+
+  const handleReportClick = () => {
+    dispatch(setShowReportModal(true));
+  };
+
+  const handleCloseModal = () => {
+    dispatch(setShowReportModal(false));
+  };
 
   return (
-    <ItemProvider>
-      <div className="App">
-        <Navbar onReportClick={() => setShowReportModal(true)} />
-        <Hero onReportClick={() => setShowReportModal(true)} />
-        <SearchSection />
-        <ItemsGrid />
-        <Footer />
-        
-        {showReportModal && (
-          <ReportModal onClose={() => setShowReportModal(false)} />
-        )}
-      </div>
-    </ItemProvider>
+    <div className="App">
+      <Navbar onReportClick={handleReportClick} />
+      <Hero onReportClick={handleReportClick} />
+      <SearchSection />
+      <ItemsGrid />
+      <Footer />
+      
+      {showReportModal && (
+        <ReportModal onClose={handleCloseModal} />
+      )}
+    </div>
   );
 }
 
