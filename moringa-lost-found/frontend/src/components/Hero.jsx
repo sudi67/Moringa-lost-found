@@ -24,12 +24,7 @@ const Hero = ({ onReportClick }) => {
             </button>
           </div>
         </div>
-        <div className="hero-image">
-          <img 
-            src="https://via.placeholder.com/600x400/4F46E5/FFFFFF?text=Lost+&+Found+Illustration" 
-            alt="Lost & Found" 
-          />
-        </div>
+        {/* Removed empty div */}
       </div>
     </section>
   );
