@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
+import { fetchMyRewards } from '../store/slices/rewardSlice';
+import RewardList from './RewardList';
 import './Profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { rewardsGiven, rewardsReceived, loading } = useSelector((state) => state.rewards);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchMyRewards());
+    }
+  }, [dispatch, user]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -42,6 +51,11 @@ const Profile = () => {
         <button onClick={handleLogout} className="btn-logout">
           Sign Out
         </button>
+      </div>
+
+      <div className="profile-section">
+        <h3>My Rewards</h3>
+        <RewardList />
       </div>
 
       <div className="profile-section">
