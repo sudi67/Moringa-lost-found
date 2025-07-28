@@ -8,6 +8,7 @@ services:
     name: lost-and-found-api
     env: python
     plan: free
+    rootDir: moringa-lost-found/backend
     buildCommand: chmod +x build.sh && ./build.sh
     startCommand: gunicorn run:app
     envVars:
