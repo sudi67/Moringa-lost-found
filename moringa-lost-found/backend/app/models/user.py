@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime
 from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -10,7 +10,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), default='user')  # 'user' or 'admin'
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
     # Relationships
     reported_items = db.relationship('Item', backref='reporter', lazy=True, foreign_keys='Item.reported_by')

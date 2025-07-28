@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime
 from app.extensions import db
 
 class Item(db.Model):
@@ -11,7 +11,7 @@ class Item(db.Model):
     location_found = db.Column(db.String(200))
     image_url = db.Column(db.String(200))
     reported_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
     # Relationships
     claims = db.relationship('Claim', backref='item', lazy=True)
