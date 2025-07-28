@@ -98,6 +98,33 @@ form {
   padding: 8px;
 }
 
+.reward-section {
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border: 1px solid #e5e7eb;
+}
+
+.reward-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.reward-section .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.reward-section input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .modal-content {
     width: 95%;

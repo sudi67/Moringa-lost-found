@@ -15,7 +15,10 @@ const ReportModal = () => {
     date: '',
     email: '',
     phone: '',
-    image: null
+    image: null,
+    rewardAmount: '',
+    rewardPhone: '',
+    addReward: false
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -175,6 +178,51 @@ const ReportModal = () => {
               placeholder="Phone (optional)"
             />
           </div>
+
+          {formData.type === 'lost' && (
+            <div className="reward-section">
+              <h3>Reward (Optional)</h3>
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="addReward"
+                    checked={formData.addReward}
+                    onChange={(e) => setFormData(prev => ({ ...prev, addReward: e.target.checked }))}
+                  />
+                  Add reward for finding this item
+                </label>
+              </div>
+              
+              {formData.addReward && (
+                <>
+                  <div className="form-group">
+                    <label>Reward Amount (KES)</label>
+                    <input
+                      type="number"
+                      name="rewardAmount"
+                      value={formData.rewardAmount}
+                      onChange={handleChange}
+                      min="1"
+                      step="0.01"
+                      placeholder="Enter amount"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>MPESA Phone Number</label>
+                    <input
+                      type="tel"
+                      name="rewardPhone"
+                      value={formData.rewardPhone}
+                      onChange={handleChange}
+                      placeholder="+2547XXXXXXXX"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           <button type="submit" className="btn btn-primary">
             Submit Report
