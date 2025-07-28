@@ -15,7 +15,7 @@ A comprehensive digital platform for reporting, tracking, and recovering lost an
 - [Testing](#testing)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-- [License](#license)
+
 
 ## 🌟 Overview
 
@@ -381,13 +381,9 @@ git push origin feature/your-feature-name
 - Write meaningful commit messages
 - Add tests for new features
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
 
-For support, email: support@moringa.com or join our Slack channel: #lost-and-found
 
 ## 🙏 Acknowledgments
 
