@@ -32,7 +32,8 @@ def login():
     if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"message": "Invalid credentials"}), 401
     
-    access_token = create_access_token(identity=user.id)
+    # Use string identity instead of integer
+    access_token = create_access_token(identity=str(user.id))
     return jsonify(access_token=access_token), 200
 
 @auth_bp.route('/admin/login', methods=['POST'])
@@ -45,11 +46,43 @@ def admin_login():
     if not admin or not check_password_hash(admin.password_hash, password):
         return jsonify({"message": "Invalid credentials"}), 401
 
-    # Use the user ID as the identity for consistency with regular login
-    access_token = create_access_token(identity=admin.id)
+    # Use string identity instead of integer
+    access_token = create_access_token(identity=str(admin.id))
     return jsonify(access_token=access_token), 200
+
+@auth_bp.route('/admin/signup', methods=['POST'])
+def admin_signup():
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({"message": "Email already exists"}), 409
+
+    hashed_password = generate_password_hash(password)
+    new_admin = User(
+        username=username,
+        email=email,
+        password_hash=hashed_password,
+        role="admin"  # Key difference from regular signup
+    )
+    db.session.add(new_admin)
+    db.session.commit()
+    return jsonify({"message": "Admin account created successfully"}), 201
+
 
 @auth_bp.route('/admin/protected', methods=['GET'])
 @jwt_required()
 def protected_admin_route():
     return jsonify({"message": "This is a protected admin route"})
+
+@auth_bp.route('/make-admin/<username>', methods=['PUT'])
+def make_admin(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    
+    user.role = "admin"
+    db.session.commit()
+    return jsonify({"message": f"User {username} is now an admin"}), 200

@@ -2,6 +2,8 @@ from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.models.user import User
+from app.models.item import Item
+from app.models.report import Comment
 from app import db
 
 # Register a new user
@@ -59,3 +61,40 @@ def get_user_profile():
         "email": user.email,
         "role": user.role
     })
+
+# Get all items
+def get_items():
+    items = Item.query.all()
+    return jsonify([{
+        "id": item.id,
+        "name": item.name,
+        "description": item.description,
+        "status": item.status,
+        "location_found": item.location_found,
+        "created_at": item.created_at.isoformat()
+    } for item in items])
+
+# Get item by ID
+def get_item_by_id(item_id):
+    item = Item.query.get(item_id)
+    if not item:
+        return jsonify({"message": "Item not found"}), 404
+    
+    return jsonify({
+        "id": item.id,
+        "name": item.name,
+        "description": item.description,
+        "status": item.status,
+        "location_found": item.location_found,
+        "created_at": item.created_at.isoformat()
+    })
+
+# Get comments for an item
+def get_item_comments(item_id):
+    comments = Comment.query.filter_by(item_id=item_id).all()
+    return jsonify([{
+        "id": comment.id,
+        "comment_text": comment.comment_text,
+        "author_id": comment.author_id,
+        "created_at": comment.created_at.isoformat()
+    } for comment in comments])
