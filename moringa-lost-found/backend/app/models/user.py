@@ -17,8 +17,8 @@ class User(db.Model):
     reports = db.relationship('Report', back_populates='user', lazy=True)
     claims = db.relationship('Claim', backref='claimant', lazy=True, foreign_keys='Claim.claimant_id')
     comments = db.relationship('Comment', backref='author', lazy=True)
-    rewards_as_finder = db.relationship('Reward', backref='finder', lazy=True, foreign_keys='Reward.finder_user_id')
-    rewards_as_owner = db.relationship('Reward', backref='owner', lazy=True, foreign_keys='Reward.owner_user_id')
+    rewards_as_finder = db.relationship('Reward', foreign_keys='Reward.finder_user_id', lazy=True)
+    rewards_as_owner = db.relationship('Reward', foreign_keys='Reward.owner_user_id', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
