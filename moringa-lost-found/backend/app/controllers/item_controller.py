@@ -225,8 +225,7 @@ def get_item_rewards(item_id):
     rewards = Reward.query.filter_by(item_id=item_id).all()
     return jsonify([{
         "id": reward.id,
-        "offered_by_id": reward.offered_by_id,
-        "paid_to_id": reward.paid_to_id,
+        "owner_user_id": reward.owner_user_id,
         "amount": reward.amount,
         "status": reward.status,
         "created_at": reward.created_at.isoformat()
