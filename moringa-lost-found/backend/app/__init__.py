@@ -12,21 +12,15 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
 
-    # Configure CORS
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": [
-                "http://localhost:3000",
-                "http://localhost:5173", 
-                "http://localhost:5174",
-                "http://localhost:8080",
-                "https://moringa-lost-found.onrender.com",
-                "https://moringa-lost-found-api.onrender.com"
-            ],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"]
-        }
-    })
+    # Configure CORS - allow all origins for development
+    CORS(app, origins=[
+        "http://localhost:3000",
+        "http://localhost:5173", 
+        "http://localhost:5174",
+        "http://localhost:8080",
+        "https://moringa-lost-found.onrender.com",
+        "https://moringa-lost-found-api.onrender.com"
+    ], supports_credentials=True)
 
     # Initialize extensions
     db.init_app(app)

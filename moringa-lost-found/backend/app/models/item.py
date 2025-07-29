@@ -8,6 +8,7 @@ class Item(db.Model):
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text)
     status = db.Column(db.String(20), default='lost')  # 'lost', 'found', 'claimed'
+    category = db.Column(db.String(50), default='other')
     location_found = db.Column(db.String(200))
     image_url = db.Column(db.String(200))
     reported_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)

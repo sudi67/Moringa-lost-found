@@ -20,6 +20,7 @@ def add_item():
         name=data['name'],
         description=data.get('description'),
         status=data.get('status', 'lost'),
+        category=data.get('category', 'other'),
         location_found=data.get('location_found'),
         image_url=data.get('image_url'),
         reported_by=current_user_id
@@ -38,7 +39,10 @@ def get_item(item_id):
         "status": item.status,
         "description": item.description,
         "location_found": item.location_found,
-        "reported_by": item.reported_by
+        "reported_by": item.reported_by,
+        "created_at": item.created_at.isoformat() if item.created_at else None,
+        "image_url": item.image_url,
+        "category": item.category
     }), 200
 
 @item_bp.route('/<int:item_id>', methods=['PUT'])
@@ -89,7 +93,10 @@ def get_all_items():
         "status": item.status,
         "description": item.description,
         "location_found": item.location_found,
-        "reported_by": item.reported_by
+        "reported_by": item.reported_by,
+        "created_at": item.created_at.isoformat() if item.created_at else None,
+        "image_url": item.image_url,
+        "category": item.category
     } for item in items]
     return jsonify(result), 200
 
