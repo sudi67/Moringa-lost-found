@@ -192,18 +192,17 @@ def offer_reward(item_id):
     except (ValueError, TypeError):
         return jsonify({"error": "Invalid user identity"}), 401
 
-    required_fields = ['amount']
+    required_fields = ['amount', 'owner_user_id']
     if not all(field in data for field in required_fields):
-        return jsonify({"error": "amount is required"}), 400
+        return jsonify({"error": "amount and owner_user_id are required"}), 400
 
     item = Item.query.get_or_404(item_id)
     
     # Create a reward offer
     reward = Reward(
         item_id=item_id,
-        offered_by_id=current_user_id,  # Use 'offered_by_id' from Reward model
-        amount=data['amount'],
-        status='offered'
+        owner_user_id=data['owner_user_id'],
+        amount=data['amount']
     )
     
     db.session.add(reward)
@@ -214,7 +213,7 @@ def offer_reward(item_id):
         "reward": {
             "id": reward.id,
             "item_id": reward.item_id,
-            "offered_by_id": reward.offered_by_id,
+            "owner_user_id": reward.owner_user_id,
             "amount": reward.amount,
             "status": reward.status,
             "created_at": reward.created_at.isoformat()
