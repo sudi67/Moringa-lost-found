@@ -64,7 +64,7 @@ class Reward(db.Model):
     owner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     mpesa_transaction_id = db.Column(db.String(100), unique=True, nullable=True)
-    mpesa_phone_number = db.Column(db.String(20), nullable=False)
+    mpesa_phone_number = db.Column(db.String(20), nullable= True)
     status = db.Column(db.String(20), default='pending')  # pending, completed, failed
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
     updated_at = db.Column(db.DateTime, default=lambda: datetime.utcnow(), onupdate=lambda: datetime.utcnow())
