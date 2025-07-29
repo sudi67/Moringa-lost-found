@@ -22,7 +22,7 @@ class Report(db.Model):
     user = db.relationship('User', back_populates='reports')
     
     # Relationship to reward
-    reward = db.relationship('Reward', backref='report', uselist=False, lazy=True)
+    reward = db.relationship('Reward', uselist=False, lazy=True)
 
     def __repr__(self):
         return f'<Report Item {self.item_id} by User {self.user_id}>'
