@@ -60,7 +60,7 @@ class Reward(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
     report_id = db.Column(db.Integer, db.ForeignKey('reports.id'), nullable=True)  # Link to report
-    finder_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    finder_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     owner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     mpesa_transaction_id = db.Column(db.String(100), unique=True, nullable=True)
