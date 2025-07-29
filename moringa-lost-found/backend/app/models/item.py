@@ -16,7 +16,7 @@ class Item(db.Model):
     # Relationships
     claims = db.relationship('Claim', backref='item', lazy=True)
     comments = db.relationship('Comment', backref='item', lazy=True)
-    rewards = db.relationship('Reward', backref='item', lazy=True)
+    rewards = db.relationship('Reward', lazy=True)
 
     def __repr__(self):
         return f'<Item {self.name} - {self.status}>'
