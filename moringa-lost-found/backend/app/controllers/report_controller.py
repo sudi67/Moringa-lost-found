@@ -165,11 +165,11 @@ def get_all_reports():
     found_items = []
     for item in items:
         item_data = {
-            "id": item.id,
-            "name": item.name,
-            "description": item.description,
-            "status": item.status,
-            "created_at": item.created_at.isoformat()
+        "id": item.id,
+        "name": item.name,
+        "description": item.description,
+        "status": item.status,
+        "created_at": item.created_at.isoformat()
         }
         if item.status == 'lost':
             lost_items.append(item_data)

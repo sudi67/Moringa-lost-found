@@ -72,8 +72,8 @@ class Reward(db.Model):
     # Relationships
     item = db.relationship('Item', backref='rewards')
     report = db.relationship('Report', backref='reward_link')
-    finder = db.relationship('User', foreign_keys=[finder_user_id], backref='rewards_received')
-    owner = db.relationship('User', foreign_keys=[owner_user_id], backref='rewards_given')
+    finder = db.relationship('User', foreign_keys=[finder_user_id], backref='rewards_as_finder')
+    owner = db.relationship('User', foreign_keys=[owner_user_id], backref='rewards_as_owner')
 
     def __repr__(self):
         return f'<Reward {self.amount} for Item {self.item_id} - {self.status}>'
