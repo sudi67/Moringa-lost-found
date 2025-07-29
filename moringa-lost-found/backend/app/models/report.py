@@ -70,7 +70,7 @@ class Reward(db.Model):
     updated_at = db.Column(db.DateTime, default=lambda: datetime.utcnow(), onupdate=lambda: datetime.utcnow())
     
     # Relationships
-    item = db.relationship('Item', backref='rewards')
+    item = db.relationship('Item')
     report = db.relationship('Report', backref='reward_link')
     finder = db.relationship('User', foreign_keys=[finder_user_id])
     owner = db.relationship('User', foreign_keys=[owner_user_id])
