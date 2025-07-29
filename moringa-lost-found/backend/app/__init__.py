@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from app.extensions import db, jwt
 from flask_migrate import Migrate
 from app.routes.auth_routes import auth_bp
@@ -10,6 +11,22 @@ from app.routes.admin_routes import admin_bp
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
+
+    # Configure CORS
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:3000",
+                "http://localhost:5173", 
+                "http://localhost:5174",
+                "http://localhost:8080",
+                "https://moringa-lost-found.onrender.com",
+                "https://moringa-lost-found-api.onrender.com"
+            ],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"]
+        }
+    })
 
     # Initialize extensions
     db.init_app(app)
