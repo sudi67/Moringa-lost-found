@@ -1,3 +1,5 @@
+// src/components/Navbar.jsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,15 +28,16 @@ const Navbar = ({ onReportClick }) => {
           <i className="fas fa-search-location"></i>
           <span>Moringa Lost & Found</span>
         </Link>
-        
+
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" className="nav-link active">Home</Link>
           <a href="#report" className="nav-link" onClick={onReportClick}>Report Item</a>
           <a href="#search" className="nav-link">Search</a>
-          
+
           {user ? (
             <>
               <Link to="/profile" className="nav-link">Profile</Link>
+              <Link to="/pay" className="nav-link">Make Payment</Link> {/* ✅ NEW LINK */}
               <button onClick={handleLogout} className="nav-link logout-btn">
                 Sign Out
               </button>
@@ -43,10 +46,11 @@ const Navbar = ({ onReportClick }) => {
             <>
               <Link to="/login" className="nav-link">Sign In</Link>
               <Link to="/signup" className="nav-link">Sign Up</Link>
+              <Link to="/pay" className="nav-link">Make Payment</Link> {/* ✅ Also visible to guests */}
             </>
           )}
         </div>
-        
+
         <div className="nav-toggle" onClick={toggleMenu}>
           <span></span>
           <span></span>

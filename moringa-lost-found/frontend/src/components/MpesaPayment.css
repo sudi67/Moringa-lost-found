@@ -1,0 +1,111 @@
+/* /home/hp/Moringa-lost-found/moringa-lost-found/frontend/src/components/MpesaPayment.css */
+
+.mpesa-payment-page {
+  padding-top: 80px; /* Space for fixed navbar */
+  padding-bottom: 40px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.mpesa-payment-container {
+  background-color: #fff;
+  padding: 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mpesa-header {
+  margin-bottom: 2rem;
+}
+
+.mpesa-logo {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+.mpesa-header h2 {
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mpesa-form .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.mpesa-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.mpesa-form input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.mpesa-form input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.mpesa-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.mpesa-submit-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.mpesa-submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.mpesa-footer {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.error-message, .success-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.success-message {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { fetchMyRewards } from '../store/slices/rewardSlice';
@@ -51,6 +51,13 @@ const Profile = () => {
         <button onClick={handleLogout} className="btn-logout">
           Sign Out
         </button>
+
+        {/* Add the Make Payment link here: */}
+        <div style={{ marginTop: '1rem' }}>
+          <Link to="/pay" className="btn-pay">
+            Make Payment
+          </Link>
+        </div>
       </div>
 
       <div className="profile-section">

@@ -72,3 +72,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Add this at the bottom */
+.btn-pay {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-pay:hover {
+  background-color: #0056b3;
+}
