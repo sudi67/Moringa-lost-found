@@ -1,30 +1,27 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import itemService from '../../services/itemService';
 
 // Async thunks for API calls
-import rewardService from '../../services/rewardService';
-
 export const fetchItems = createAsyncThunk(
   'items/fetchItems',
   async (_, { rejectWithValue }) => {
     try {
-      const data = await rewardService.getAllItems();
-      return data;
+      const response = await itemService.getItems();
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-
-import reportRewardService from '../../services/reportRewardService';
 
 export const addItem = createAsyncThunk(
   'items/addItem',
   async (item, { rejectWithValue }) => {
     try {
-      const data = await reportRewardService.createReport(item);
-      return data;
+      const response = await itemService.createItem(item);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -33,20 +30,10 @@ export const updateItem = createAsyncThunk(
   'items/updateItem',
   async ({ id, updatedItem }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/items/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedItem),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update item');
-      }
-      const data = await response.json();
-      return data;
+      const response = await itemService.updateItem(id, updatedItem);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -55,15 +42,10 @@ export const deleteItem = createAsyncThunk(
   'items/deleteItem',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/items/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete item');
-      }
+      await itemService.deleteItem(id);
       return id;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );

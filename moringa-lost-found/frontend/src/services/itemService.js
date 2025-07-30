@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://moringa-lost-found-api.onrender.com/api/rewards';
+const API_URL = 'https://moringa-lost-found-api.onrender.com/api/reports';
 
 const getAuthToken = () => {
   try {
@@ -32,13 +32,14 @@ authAxios.interceptors.request.use(
   }
 );
 
-const rewardService = {
-  createReward: (rewardData) => authAxios.post('/', rewardData),
-  initiatePayment: (rewardId) => authAxios.post(`/${rewardId}/pay`),
-  getMyRewards: () => authAxios.get('/my-rewards'),
-  getReward: (rewardId) => authAxios.get(`/${rewardId}`),
-  handleMpesaCallback: (rewardId, callbackData) => axios.post(`${API_URL}/${rewardId}/callback`, callbackData),
+const itemService = {
+  // Use public axios for fetching all items, in case it's a public endpoint
+  getItems: () => axios.get(API_URL),
+  
+  // Use authenticated axios for user-specific actions
+  createItem: (itemData) => authAxios.post('/create', itemData),
+  updateItem: (id, itemData) => authAxios.put(`/${id}`, itemData),
+  deleteItem: (id) => authAxios.delete(`/${id}`),
 };
 
-export default rewardService;
-
+export default itemService;
