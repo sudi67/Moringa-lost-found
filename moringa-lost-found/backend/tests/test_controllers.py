@@ -8,7 +8,7 @@ from flask import json
 
 @pytest.fixture
 def app():
-    app = create_app(testing=True)
+    app = create_app()
     with app.app_context():
         db.create_all()
         yield app
