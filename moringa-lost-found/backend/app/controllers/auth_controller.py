@@ -8,19 +8,24 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
-    data = request.get_json()
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
 
-    if User.query.filter_by(email=email).first():
-        return jsonify({"message": "Email already exists"}), 409
+        if User.query.filter_by(email=email).first():
+            return jsonify({"message": "Email already exists"}), 409
 
-    hashed_password = generate_password_hash(password)
-    new_user = User(username=username, email=email, password_hash=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"message": "User created successfully"}), 201
+        hashed_password = generate_password_hash(password)
+        new_user = User(username=username, email=email, password_hash=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"message": "User created successfully"}), 201
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
