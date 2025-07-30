@@ -1,0 +1,17 @@
+.item-rewards {
+  margin-top: 20px;
+}
+
+.item-rewards-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.item-rewards-loading,
+.item-rewards-error,
+.item-rewards-empty {
+  font-style: italic;
+  color: #666;
+  margin-top: 10px;
+}

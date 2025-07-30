@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, reset } from '../store/slices/authSlice';
+import { login, reset, fetchCurrentUser } from '../store/slices/authSlice';
 import './SignIn.css';
 
 const SignIn = () => {
@@ -20,11 +20,12 @@ const SignIn = () => {
   );
 
   useEffect(() => {
+    console.log('SignIn useEffect:', { isSuccess, user, isError, message });
     if (isError) {
       console.error(message);
     }
 
-    if (isSuccess || user) {
+    if (isSuccess && user) {
       navigate('/profile');
     }
 
@@ -38,10 +39,14 @@ const SignIn = () => {
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const userData = { email, password };
-    dispatch(login(userData));
+    const resultAction = await dispatch(login(userData));
+    if (login.fulfilled.match(resultAction)) {
+      await dispatch(fetchCurrentUser());
+      navigate('/profile');
+    }
   };
 
   return (
