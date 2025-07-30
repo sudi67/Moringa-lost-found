@@ -1,6 +1,7 @@
 from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models.report import Claim, Comment, Reward
+from app.models.report import Claim, Comment
+from app.models.reward import Reward
 from app.models.item import Item
 from app.extensions import db
 from app.models.user import User

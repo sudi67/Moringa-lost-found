@@ -7,10 +7,15 @@ class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
+    reward_amount = db.Column(db.Float, nullable=True)
+    reward_status = db.Column(db.String(20), nullable=True)
+    mpesa_phone_number = db.Column(db.String(20), nullable=True)
+    mpesa_transaction_id = db.Column(db.String(100), unique=True, nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
-    user = db.relationship('User', backref='reports')
+    # user relationship is defined in User model
     item = db.relationship('Item', backref='reports')
+    rewards = db.relationship('Reward', backref='report', lazy=True)
 
     def __repr__(self):
         return f'<Report {self.id} by User {self.user_id} for Item {self.item_id}>'
@@ -40,25 +45,9 @@ class Comment(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
     item = db.relationship('Item', backref='comments')
-    author = db.relationship('User', backref='comments')
+    author = db.relationship('User')
 
     def __repr__(self):
         return f'<Comment {self.id} by User {self.author_id} for Item {self.item_id}>'
 
-class Reward(db.Model):
-    __tablename__ = 'rewards'
 
-    id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
-    owner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    finder_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    amount = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(20), default='pending')
-    created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
-
-    item = db.relationship('Item', backref='rewards')
-    owner = db.relationship('User', foreign_keys=[owner_user_id], backref='rewards_as_owner')
-    finder = db.relationship('User', foreign_keys=[finder_user_id], backref='rewards_as_finder')
-
-    def __repr__(self):
-        return f'<Reward {self.amount} for Item {self.item_id} - {self.status}>'

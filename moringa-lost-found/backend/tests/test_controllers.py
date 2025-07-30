@@ -3,7 +3,8 @@ from app import create_app
 from app.extensions import db, jwt
 from app.models.user import User
 from app.models.item import Item
-from app.models.report import Claim, Comment, Reward
+from app.models.report import Claim, Comment
+from app.models.reward import Reward
 from flask import json
 
 @pytest.fixture

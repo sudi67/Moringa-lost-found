@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { register, reset } from '../store/slices/authSlice';
 import './SignUp.css';
@@ -27,7 +27,7 @@ const SignUp = () => {
     }
 
     if (isSuccess || user) {
-      navigate('/profile');
+      navigate('/login'); // Redirect to login after successful signup
     }
 
     dispatch(reset());
@@ -45,28 +45,17 @@ const SignUp = () => {
 
     if (password !== confirmPassword) {
       console.error('Passwords do not match');
-    } else {
-      const userData = {
-        username,
-        email,
-        password,
-      };
-
-      try {
-        // Assuming this is where the API call happens
-        await dispatch(register(userData));
-      } catch (error) {
-        console.error('Signup failed:', error.message);
-        // Display a user-friendly error message on the UI
-      }
+      return;
     }
+
+    const userData = {
+      username,
+      email,
+      password,
+    };
+
+    dispatch(register(userData));
   };
-
-  useEffect(() => {
-    if (isError) {
-      alert(message || 'Signup failed. Please try again.');
-    }
-  }, [isError, message]);
 
   return (
     <div className="signup-container">
@@ -134,7 +123,7 @@ const SignUp = () => {
       
       <div className="login-link">
         <p>
-          Already have an account? <a href="/login">Sign In</a>
+          Already have an account? <Link to="/login">Sign In</Link>
         </p>
       </div>
     </div>

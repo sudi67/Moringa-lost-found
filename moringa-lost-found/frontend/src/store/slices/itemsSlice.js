@@ -33,7 +33,7 @@ export const updateItem = createAsyncThunk(
   'items/updateItem',
   async ({ id, updatedItem }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/items/${id}`, {
+      const response = await fetch(`https://moringa-lost-found-api.onrender.com/items/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export const deleteItem = createAsyncThunk(
   'items/deleteItem',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/items/${id}`, {
+      const response = await fetch(`https://moringa-lost-found-api.onrender.com/items/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

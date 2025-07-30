@@ -16,7 +16,7 @@ function MpesaPayment() {
     setSuccess('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/pay', {
+      const res = await fetch('https://moringa-lost-found-api.onrender.com/api/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, amount }),

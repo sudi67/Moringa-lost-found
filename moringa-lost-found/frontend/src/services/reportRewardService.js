@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authService from './authService';
 
-const API_URL = '/api/reports';
+const API_URL = 'https://moringa-lost-found-api.onrender.com/reports';
 
 class ReportRewardService {
   // Create reward for report
@@ -98,7 +98,7 @@ class ReportRewardService {
           Authorization: token ? `Bearer ${token}` : '',
         },
       };
-      const response = await axios.get('/api/reports/my-rewards', config);
+      const response = await axios.get('https://moringa-lost-found-api.onrender.com/reports/my-rewards', config);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;

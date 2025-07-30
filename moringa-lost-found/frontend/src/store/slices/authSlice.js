@@ -52,6 +52,11 @@ export const fetchCurrentUser = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const user = await authService.getCurrentUser();
+      if (!user) {
+        // Token invalid or expired, logout user
+        thunkAPI.dispatch(logout());
+        return thunkAPI.rejectWithValue('Session expired. Please login again.');
+      }
       return user;
     } catch (error) {
       const message =

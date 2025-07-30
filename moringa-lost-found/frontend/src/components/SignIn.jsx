@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, reset, fetchCurrentUser } from '../store/slices/authSlice';
 import './SignIn.css';
@@ -89,7 +89,7 @@ const SignIn = () => {
       
       <div className="signup-link">
         <p>
-          Don't have an account? <a href="#signup">Sign Up</a>
+          Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import './App.css';
 import Navbar from './components/Navbar';
@@ -13,14 +13,24 @@ import SignIn from './components/SignIn';
 import Profile from './components/Profile';
 import MpesaPayment from './components/MpesaPayment'; // ← new import
 import { setShowReportModal } from './store/slices/uiSlice';
-import { fetchCurrentUser } from './store/slices/authSlice';
+import { fetchCurrentUser, logout } from './store/slices/authSlice';
 
-function App() {
+// Create a separate component that uses useNavigate
+function AppContent() {
   const showReportModal = useSelector((state) => state.ui.showReportModal);
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(fetchCurrentUser());
+    // Only try to fetch current user if there's a token
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchCurrentUser()).unwrap().catch(() => {
+        dispatch(logout());
+        // Don't automatically redirect to login, let user navigate naturally
+      });
+    }
   }, [dispatch]);
 
   const handleReportClick = () => {
@@ -32,29 +42,35 @@ function App() {
   };
 
   return (
+    <div className="App">
+      <Navbar onReportClick={handleReportClick} />
+
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Hero onReportClick={handleReportClick} />
+            <SearchSection />
+            <ItemsGrid />
+            <Footer />
+          </>
+        } />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<SignIn />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/pay" element={<MpesaPayment />} /> {/* ← added */}
+      </Routes>
+
+      {showReportModal && (
+        <ReportModal onClose={handleCloseModal} />
+      )}
+    </div>
+  );
+}
+
+function App() {
+  return (
     <Router>
-      <div className="App">
-        <Navbar onReportClick={handleReportClick} />
-
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Hero onReportClick={handleReportClick} />
-              <SearchSection />
-              <ItemsGrid />
-              <Footer />
-            </>
-          } />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<SignIn />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/pay" element={<MpesaPayment />} /> {/* ← added */}
-        </Routes>
-
-        {showReportModal && (
-          <ReportModal onClose={handleCloseModal} />
-        )}
-      </div>
+      <AppContent />
     </Router>
   );
 }

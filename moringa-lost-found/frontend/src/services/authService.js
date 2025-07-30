@@ -29,12 +29,21 @@ const getCurrentUser = async () => {
   if (!token) {
     return null;
   }
-  const response = await axios.get(API_URL + 'me', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
+  try {
+    const response = await axios.get(API_URL + 'me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 422) {
+      // Token invalid or expired, remove it
+      localStorage.removeItem('token');
+      return null;
+    }
+    throw error;
+  }
 };
 
 const authService = {

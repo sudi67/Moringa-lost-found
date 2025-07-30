@@ -1,15 +1,15 @@
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.models.user import User
 from app.extensions import db
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
-
-@auth_bp.route('/signup', methods=['POST'])
 def signup():
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"message": "No JSON data provided"}), 400
+            
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
@@ -18,26 +18,33 @@ def signup():
         if not username or not email or not password:
             return jsonify({"message": "Username, email, and password are required"}), 400
 
+        # Check if username already exists
+        if User.query.filter_by(username=username).first():
+            return jsonify({"message": "Username already exists"}), 409
+
+        # Check if email already exists
         if User.query.filter_by(email=email).first():
             return jsonify({"message": "Email already exists"}), 409
 
-        # Use set_password method to hash password
+        # Create new user
         new_user = User(username=username, email=email)
         new_user.set_password(password)
+        
         db.session.add(new_user)
         try:
             db.session.commit()
+            return jsonify({"message": "User created successfully"}), 201
         except Exception as commit_error:
             db.session.rollback()
+            import traceback
+            traceback.print_exc()
             return jsonify({"message": "Database commit error", "error": str(commit_error)}), 500
 
-        return jsonify({"message": "User created successfully"}), 201
     except Exception as e:
         import traceback
         traceback.print_exc()
         return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
-@auth_bp.route('/login', methods=['POST'])
 def login():
     try:
         data = request.get_json()
@@ -45,7 +52,7 @@ def login():
         password = data.get('password')
 
         user = User.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password_hash, password):
+        if not user or not user.check_password(password):
             return jsonify({"message": "Invalid credentials"}), 401
         
         # Use string identity instead of integer
@@ -62,21 +69,19 @@ def login():
         traceback.print_exc()
         return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
-@auth_bp.route('/admin/login', methods=['POST'])
 def admin_login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
 
     admin = User.query.filter_by(username=username, role="admin").first()
-    if not admin or not check_password_hash(admin.password_hash, password):
+    if not admin or not admin.check_password(password):
         return jsonify({"message": "Invalid credentials"}), 401
 
     # Use string identity instead of integer
     access_token = create_access_token(identity=str(admin.id))
     return jsonify(access_token=access_token), 200
 
-@auth_bp.route('/admin/signup', methods=['POST'])
 def admin_signup():
     data = request.get_json()
     username = data.get('username')
@@ -98,12 +103,10 @@ def admin_signup():
     return jsonify({"message": "Admin account created successfully"}), 201
 
 
-@auth_bp.route('/admin/protected', methods=['GET'])
 @jwt_required()
 def protected_admin_route():
     return jsonify({"message": "This is a protected admin route"})
 
-@auth_bp.route('/make-admin/<username>', methods=['PUT'])
 def make_admin(username):
     user = User.query.filter_by(username=username).first()
     if not user:
@@ -113,9 +116,6 @@ def make_admin(username):
     db.session.commit()
     return jsonify({"message": f"User {username} is now an admin"}), 200
 
-from flask_jwt_extended import get_jwt_identity, jwt_required
-
-@auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def get_current_user():
     user_id = get_jwt_identity()
@@ -128,6 +128,6 @@ def get_current_user():
         "email": user.email,
         "created_at": user.created_at.isoformat() if user.created_at else None
     }
-    return jsonify(user=user_data), 200
+    return jsonify(user_data), 200
 
 
