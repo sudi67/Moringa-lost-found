@@ -32,7 +32,7 @@ const Navbar = ({ onReportClick }) => {
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" className="nav-link active">Home</Link>
           <a href="#report" className="nav-link" onClick={onReportClick}>Report Item</a>
-          <a href="#search" className="nav-link">Search</a>
+          
 
           {user ? (
             <>
