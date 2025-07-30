@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'https://moringa-lost-found-api.onrender.com/items/<item_id>/rewards';
+const API_BASE_URL = 'https://moringa-lost-found-api.onrender.com';
 
 // Create axios instance with auth header
 const authAxios = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
 });
 
 // Add token to requests
@@ -25,7 +25,7 @@ const rewardService = {
   // Create a new reward
   createReward: async (rewardData) => {
     try {
-      const response = await authAxios.post('/', rewardData);
+      const response = await authAxios.post('/items/rewards', rewardData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to create reward' };
@@ -35,7 +35,7 @@ const rewardService = {
   // Get all items
   getAllItems: async () => {
     try {
-      const response = await axios.get('https://moringa-lost-found-api.onrender.com/items');
+      const response = await axios.get(`${API_BASE_URL}/items`);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch items' };
@@ -45,7 +45,7 @@ const rewardService = {
   // Get item by ID
   getItemById: async (itemId) => {
     try {
-      const response = await axios.get(`https://moringa-lost-found-api.onrender.com/items/${itemId}`);
+      const response = await axios.get(`${API_BASE_URL}/items/${itemId}`);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch item details' };
@@ -55,7 +55,7 @@ const rewardService = {
   // Initiate M-Pesa payment
   initiatePayment: async (rewardId) => {
     try {
-      const response = await authAxios.post(`/${rewardId}/pay`);
+      const response = await authAxios.post(`/items/rewards/${rewardId}/pay`);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to initiate payment' };
@@ -65,7 +65,7 @@ const rewardService = {
   // Get user's rewards
   getMyRewards: async () => {
     try {
-      const response = await authAxios.get('/my-rewards');
+      const response = await authAxios.get('/items/rewards/my-rewards');
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch rewards' };
@@ -75,7 +75,7 @@ const rewardService = {
   // Get specific reward details
   getReward: async (rewardId) => {
     try {
-      const response = await authAxios.get(`/${rewardId}`);
+      const response = await authAxios.get(`/items/rewards/${rewardId}`);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch reward details' };
@@ -85,9 +85,7 @@ const rewardService = {
   // Get rewards for a specific item by item ID
   getRewardsByItemId: async (itemId) => {
     try {
-      // Note: baseURL is API_URL which is /api/rewards, so we use full URL here
-      const response = await axios.get(`https://moringa-lost-found-api.onrender.com/items/<item_id>/rewards`);
-     
+      const response = await axios.get(`${API_BASE_URL}/items/${itemId}/rewards`);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch rewards for item' };
@@ -97,7 +95,7 @@ const rewardService = {
   // Handle M-Pesa callback (for backend use)
   handleMpesaCallback: async (rewardId, callbackData) => {
     try {
-      const response = await axios.post(`/${rewardId}/callback`, callbackData);
+      const response = await axios.post(`${API_BASE_URL}/items/rewards/${rewardId}/callback`, callbackData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to process callback' };

@@ -14,13 +14,23 @@ def signup():
         email = data.get('email')
         password = data.get('password')
 
+        # Validate input data
+        if not username or not email or not password:
+            return jsonify({"message": "Username, email, and password are required"}), 400
+
         if User.query.filter_by(email=email).first():
             return jsonify({"message": "Email already exists"}), 409
 
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, email=email, password_hash=hashed_password)
+        # Use set_password method to hash password
+        new_user = User(username=username, email=email)
+        new_user.set_password(password)
         db.session.add(new_user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as commit_error:
+            db.session.rollback()
+            return jsonify({"message": "Database commit error", "error": str(commit_error)}), 500
+
         return jsonify({"message": "User created successfully"}), 201
     except Exception as e:
         import traceback

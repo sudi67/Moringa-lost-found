@@ -62,6 +62,12 @@ const SignUp = () => {
     }
   };
 
+  useEffect(() => {
+    if (isError) {
+      alert(message || 'Signup failed. Please try again.');
+    }
+  }, [isError, message]);
+
   return (
     <div className="signup-container">
       <h2>Create Account</h2>
