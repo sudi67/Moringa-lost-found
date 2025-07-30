@@ -1,0 +1,82 @@
+.reward-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reward-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.reward-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.reward-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.reward-status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+}
+
+.reward-details {
+  margin-top: 15px;
+}
+
+.reward-amount,
+.reward-parties,
+.reward-phone,
+.reward-date,
+.reward-transaction {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.reward-amount .amount-label,
+.reward-parties .party-label,
+.reward-phone .phone-label,
+.reward-date .date-label,
+.reward-transaction .transaction-label {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #555;
+  min-width: 80px;
+}
+
+.reward-amount .amount-value,
+.reward-parties .party-value,
+.reward-phone .phone-value,
+.reward-date .date-value,
+.reward-transaction .transaction-value {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .reward-card {
+    padding: 15px;
+  }
+  
+  .reward-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .reward-status {
+    margin-top: 10px;
+  }
+}
