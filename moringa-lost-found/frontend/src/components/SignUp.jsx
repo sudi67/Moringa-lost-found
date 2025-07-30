@@ -40,18 +40,25 @@ const SignUp = () => {
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      console.error('Passwords do not match');
     } else {
       const userData = {
         username,
         email,
         password,
       };
-      dispatch(register(userData));
+
+      try {
+        // Assuming this is where the API call happens
+        await dispatch(register(userData));
+      } catch (error) {
+        console.error('Signup failed:', error.message);
+        // Display a user-friendly error message on the UI
+      }
     }
   };
 

@@ -30,6 +30,14 @@ const ReportModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    // Add an authentication check here
+    if (!isAuthenticated) { // Assuming `isAuthenticated` is a state or context variable
+      console.error('User not authenticated');
+      // Redirect to login or show a message
+      return;
+    }
+
     setLoading(true);
 
     // Prepare payload for backend API

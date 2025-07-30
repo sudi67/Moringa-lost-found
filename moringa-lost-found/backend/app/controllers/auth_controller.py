@@ -24,23 +24,28 @@ def signup():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
 
-    user = User.query.filter_by(email=email).first()
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({"message": "Invalid credentials"}), 401
-    
-    # Use string identity instead of integer
-    access_token = create_access_token(identity=str(user.id))
-    user_data = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "created_at": user.created_at.isoformat() if user.created_at else None
-    }
-    return jsonify(access_token=access_token, user=user_data), 200
+        user = User.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.password_hash, password):
+            return jsonify({"message": "Invalid credentials"}), 401
+        
+        # Use string identity instead of integer
+        access_token = create_access_token(identity=str(user.id))
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "created_at": user.created_at.isoformat() if user.created_at else None
+        }
+        return jsonify(access_token=access_token, user=user_data), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
 @auth_bp.route('/admin/login', methods=['POST'])
 def admin_login():
