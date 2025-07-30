@@ -62,6 +62,17 @@ const rewardService = {
     }
   },
 
+  // Get rewards for a specific item by item ID
+  getRewardsByItemId: async (itemId) => {
+    try {
+      // Note: baseURL is API_URL which is /api/rewards, so we use full URL here
+      const response = await axios.get(`http://localhost:5000/api/items/${itemId}/rewards`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to fetch rewards for item' };
+    }
+  },
+
   // Handle M-Pesa callback (for backend use)
   handleMpesaCallback: async (rewardId, callbackData) => {
     try {

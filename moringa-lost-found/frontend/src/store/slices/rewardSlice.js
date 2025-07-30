@@ -14,6 +14,18 @@ export const fetchMyRewards = createAsyncThunk(
   }
 );
 
+export const fetchRewardsByItemId = createAsyncThunk(
+  'rewards/fetchRewardsByItemId',
+  async (itemId, { rejectWithValue }) => {
+    try {
+      const response = await rewardService.getRewardsByItemId(itemId);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.error || 'Failed to fetch rewards for item');
+    }
+  }
+);
+
 export const createReward = createAsyncThunk(
   'rewards/createReward',
   async (rewardData, { rejectWithValue }) => {
@@ -43,6 +55,7 @@ const rewardSlice = createSlice({
   initialState: {
     rewardsGiven: [],
     rewardsReceived: [],
+    itemRewards: [],
     loading: false,
     error: null,
     selectedReward: null,
@@ -71,6 +84,19 @@ const rewardSlice = createSlice({
         state.rewardsReceived = action.payload.rewards_received || [];
       })
       .addCase(fetchMyRewards.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch rewards by item ID
+      .addCase(fetchRewardsByItemId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRewardsByItemId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.itemRewards = action.payload || [];
+      })
+      .addCase(fetchRewardsByItemId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

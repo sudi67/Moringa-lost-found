@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth/';
+const API_URL = 'https://moringa-lost-found-api.onrender.com/auth/';
 
 // Register user
 const register = async (userData) => {
