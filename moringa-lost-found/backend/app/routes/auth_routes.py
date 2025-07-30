@@ -6,6 +6,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 # User routes
 auth_bp.route('/signup', methods=['POST'])(auth_controller.signup)
 auth_bp.route('/login', methods=['POST'])(auth_controller.login)
+auth_bp.route('/me', methods=['GET'])(auth_controller.get_current_user)
 
 # Admin routes
 auth_bp.route('/admin/signup', methods=['POST'])(auth_controller.admin_signup)
