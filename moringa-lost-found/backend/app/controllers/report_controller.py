@@ -10,43 +10,46 @@ report_bp = Blueprint('reports', __name__, url_prefix='/reports')
 @report_bp.route('/create', methods=['POST'])
 @jwt_required()
 def create_report():
-    data = request.get_json()
-    current_user_id = get_jwt_identity()
-    
-    # Convert string user ID to integer
     try:
-        current_user_id = int(current_user_id)
-    except (ValueError, TypeError):
-        return jsonify({"error": "Invalid user identity"}), 401
+        data = request.get_json()
+        current_user_id = get_jwt_identity()
+        
+        # Convert string user ID to integer
+        try:
+            current_user_id = int(current_user_id)
+        except (ValueError, TypeError):
+            return jsonify({"error": "Invalid user identity"}), 401
 
-    required_fields = ['title', 'description', 'item_type']
-    if not all(field in data for field in required_fields):
-        return jsonify({"error": "title, description, and item_type are required"}), 400
+        required_fields = ['title', 'description', 'item_type']
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "title, description, and item_type are required"}), 400
 
-    # Create new item/report
-    item = Item(
-        name=data['title'],  # Use 'name' field from model
-        description=data['description'],
-        status=data.get('status', 'lost'),  # Default to 'lost'
-        location_found=data.get('location'),  # Use 'location_found' field
-        reported_by=current_user_id,  # Use 'reported_by' field
-        image_url=data.get('image_url')
-    )
-    
-    db.session.add(item)
-    db.session.commit()
-    
-    return jsonify({
-        "message": "Report created successfully",
-        "item": {
-            "id": item.id,
-            "name": item.name,
-            "description": item.description,
-            "status": item.status,
-            "location_found": item.location_found,
-            "created_at": item.created_at.isoformat()
-        }
-    }), 201
+        # Create new item/report
+        item = Item(
+            name=data['title'],  # Use 'name' field from model
+            description=data['description'],
+            status=data.get('status', 'lost'),  # Default to 'lost'
+            location_found=data.get('location'),  # Use 'location_found' field
+            reported_by=current_user_id,  # Use 'reported_by' field
+            image_url=data.get('image_url')
+        )
+        
+        db.session.add(item)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Report created successfully",
+            "item": {
+                "id": item.id,
+                "name": item.name,
+                "description": item.description,
+                "status": item.status,
+                "location_found": item.location_found,
+                "created_at": item.created_at.isoformat()
+            }
+        }), 201
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 @report_bp.route('/claims', methods=['POST'])
 @jwt_required()

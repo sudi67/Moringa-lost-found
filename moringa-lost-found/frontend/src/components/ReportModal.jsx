@@ -2,55 +2,69 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../store/slices/itemsSlice';
 import { setShowReportModal } from '../store/slices/uiSlice';
+import reportRewardService from '../services/reportRewardService';
 import './ReportModal.css';
 
 const ReportModal = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    type: '',
+    title: '',
+    status: '',
     category: '',
-    name: '',
     description: '',
     location: '',
-    date: '',
-    email: '',
-    phone: '',
-    image: null,
+    image_url: '',
     rewardAmount: '',
     rewardPhone: '',
     addReward: false
   });
 
-  const [imagePreview, setImagePreview] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, image: file }));
-      const reader = new FileReader();
-      reader.onload = (e) => setImagePreview(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Create item object for Redux
-    const newItem = {
-      ...formData,
-      id: Date.now(), // Temporary ID, will be replaced by backend
-      status: formData.type === 'lost' ? 'lost' : 'found',
-      image: imagePreview || null
+    setError(null);
+    setLoading(true);
+
+    // Prepare payload for backend API
+    const payload = {
+      title: formData.title,
+      description: formData.description,
+      item_type: formData.status,
+      category: formData.category,
+      location: formData.location,
+      image_url: formData.image_url,
+      // Additional fields can be added if backend supports
     };
-    
-    dispatch(addItem(newItem));
-    dispatch(setShowReportModal(false));
+
+    try {
+      // Call backend API to create report
+      const response = await reportRewardService.createReport(payload);
+
+      // Optionally update Redux store with new item
+      const newItem = {
+        id: response.item.id,
+        description: response.item.description,
+        status: response.item.status,
+        location_found: response.item.location_found,
+        image_url: response.item.image_url,
+        created_at: response.item.created_at
+      };
+      dispatch(addItem(newItem));
+
+      // Close modal on success
+      dispatch(setShowReportModal(false));
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to create report');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,17 +74,30 @@ const ReportModal = () => {
           <h2>Report Lost/Found Item</h2>
           <span className="close" onClick={() => dispatch(setShowReportModal(false))}>&times;</span>
         </div>
-        
-        <form onSubmit={handleSubmit}>
+
+        {error && <div className="error-message">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Type</label>
+            <label>Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              placeholder="Enter title"
+            />
+          </div>
+          <div className="form-group">
+            <label>Status</label>
             <select 
-              name="type" 
-              value={formData.type}
+              name="status" 
+              value={formData.status}
               onChange={handleChange}
               required
             >
-              <option value="">Select type</option>
+              <option value="">Select status</option>
               <option value="lost">Lost</option>
               <option value="found">Found</option>
             </select>
@@ -92,17 +119,6 @@ const ReportModal = () => {
               <option value="books">Books</option>
               <option value="other">Other</option>
             </select>
-          </div>
-
-          <div className="form-group">
-            <label>Item Name</label>
-            <input 
-              type="text" 
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
           </div>
 
           <div className="form-group">
@@ -128,27 +144,17 @@ const ReportModal = () => {
           </div>
 
           <div className="form-group">
-            <label>Date</label>
+            <label>Image URL</label>
             <input 
-              type="date" 
-              name="date"
-              value={formData.date}
+              type="text" 
+              name="image_url"
+              value={formData.image_url}
               onChange={handleChange}
-              required
+              placeholder="Enter image URL"
             />
-          </div>
-
-          <div className="form-group">
-            <label>Upload Image</label>
-            <input 
-              type="file" 
-              name="image"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-            {imagePreview && (
+            {formData.image_url && (
               <img 
-                src={imagePreview} 
+                src={formData.image_url} 
                 alt="Preview" 
                 style={{ 
                   maxWidth: '100%', 
@@ -160,26 +166,7 @@ const ReportModal = () => {
             )}
           </div>
 
-          <div className="form-group">
-            <label>Contact Information</label>
-            <input 
-              type="email" 
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              required
-            />
-            <input 
-              type="tel" 
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Phone (optional)"
-            />
-          </div>
-
-          {formData.type === 'lost' && (
+          {formData.status === 'lost' && (
             <div className="reward-section">
               <h3>Reward (Optional)</h3>
               <div className="form-group">
@@ -224,8 +211,8 @@ const ReportModal = () => {
             </div>
           )}
 
-          <button type="submit" className="btn btn-primary">
-            Submit Report
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit Report'}
           </button>
         </form>
       </div>
