@@ -1,0 +1,22 @@
+databases:
+  - name: lost-and-found-db
+    databaseName: lost_and_found_db
+    user: lostfound_user
+
+services:
+  - type: web
+    name: lost-and-found-api
+    env: python
+    plan: free
+    rootDir: moringa-lost-found/backend
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: gunicorn run:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lost-and-found-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true 
