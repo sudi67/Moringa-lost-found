@@ -7,6 +7,10 @@ from app.extensions import db
 
 item_bp = Blueprint('items', __name__, url_prefix='/items')
 
+@item_bp.route('', methods=['OPTIONS'])
+def options_add_item():
+    return '', 200
+
 @item_bp.route('', methods=['POST'])
 @jwt_required()
 def add_item():
@@ -45,6 +49,10 @@ def get_item(item_id):
         "category": item.category
     }), 200
 
+@item_bp.route('/<int:item_id>', methods=['OPTIONS'])
+def options_update_item(item_id):
+    return '', 200
+
 @item_bp.route('/<int:item_id>', methods=['PUT'])
 @jwt_required()
 def update_item(item_id):
@@ -68,6 +76,10 @@ def update_item(item_id):
 
     db.session.commit()
     return jsonify({"message": "Item updated successfully."}), 200
+
+@item_bp.route('/<int:item_id>', methods=['OPTIONS'])
+def options_delete_item(item_id):
+    return '', 200
 
 @item_bp.route('/<int:item_id>', methods=['DELETE'])
 @jwt_required()
@@ -99,6 +111,10 @@ def get_all_items():
         "category": item.category
     } for item in items]
     return jsonify(result), 200
+
+@item_bp.route('/<int:item_id>/claim', methods=['OPTIONS'])
+def options_claim_item(item_id):
+    return '', 200
 
 @item_bp.route('/<int:item_id>/claim', methods=['POST'])
 @jwt_required()
@@ -138,6 +154,10 @@ def claim_item(item_id):
             "created_at": claim.created_at.isoformat()
         }
     }), 201
+
+@item_bp.route('/<int:item_id>/comments', methods=['OPTIONS'])
+def options_comment_item(item_id):
+    return '', 200
 
 @item_bp.route('/<int:item_id>/comments', methods=['POST'])
 @jwt_required()
@@ -186,6 +206,10 @@ def get_item_comments(item_id):
         "comment_text": comment.comment_text,
         "created_at": comment.created_at.isoformat()
     } for comment in comments]), 200
+
+@item_bp.route('/<int:item_id>/rewards', methods=['OPTIONS'])
+def options_offer_reward(item_id):
+    return '', 200
 
 @item_bp.route('/<int:item_id>/rewards', methods=['POST'])
 @jwt_required()
@@ -238,6 +262,10 @@ def get_item_rewards(item_id):
         "created_at": reward.created_at.isoformat()
     } for reward in rewards]), 200
 
+@item_bp.route('/admin/add/<int:item_id>', methods=['OPTIONS'])
+def options_admin_add_item_to_inventory(item_id):
+    return '', 200
+
 @item_bp.route('/admin/add/<int:item_id>', methods=['POST'])
 @jwt_required()
 def admin_add_item_to_inventory(item_id):
@@ -283,6 +311,10 @@ def admin_add_item_to_inventory(item_id):
             "created_at": item.created_at.isoformat()
         }
     }), 200
+
+@item_bp.route('/admin/<int:item_id>/update', methods=['OPTIONS'])
+def options_admin_update_item(item_id):
+    return '', 200
 
 @item_bp.route('/admin/<int:item_id>/update', methods=['PUT'])
 @jwt_required()
@@ -335,6 +367,10 @@ def admin_update_item(item_id):
         }
     }), 200
 
+@item_bp.route('/admin/<int:item_id>/remove', methods=['OPTIONS'])
+def options_admin_remove_item(item_id):
+    return '', 200
+
 @item_bp.route('/admin/<int:item_id>/remove', methods=['DELETE'])
 @jwt_required()
 def admin_remove_item(item_id):
@@ -385,6 +421,10 @@ def admin_remove_item(item_id):
         "message": "Item removed from inventory successfully",
         "removed_item": item_info
     }), 200
+
+@item_bp.route('/admin/found-items', methods=['OPTIONS'])
+def options_admin_view_found_items():
+    return '', 200
 
 @item_bp.route('/admin/found-items', methods=['GET'])
 @jwt_required()
@@ -468,6 +508,10 @@ def admin_view_found_items():
         "total_count": len(items_data)
     }), 200
 
+@item_bp.route('/admin/inventory', methods=['OPTIONS'])
+def options_admin_view_inventory():
+    return '', 200
+
 @item_bp.route('/admin/inventory', methods=['GET'])
 @jwt_required()
 def admin_view_inventory():
@@ -550,6 +594,10 @@ def admin_view_inventory():
         "inventory_items": items_data,
         "total_count": len(items_data)
     }), 200
+
+@item_bp.route('/admin/claimed-items', methods=['OPTIONS'])
+def options_admin_view_claimed_items():
+    return '', 200
 
 @item_bp.route('/admin/claimed-items', methods=['GET'])
 @jwt_required()

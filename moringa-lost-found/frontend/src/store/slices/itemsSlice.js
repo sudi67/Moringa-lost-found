@@ -1,37 +1,27 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Async thunks for API calls
+import rewardService from '../../services/rewardService';
+
 export const fetchItems = createAsyncThunk(
   'items/fetchItems',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/items');
-      if (!response.ok) {
-        throw new Error('Failed to fetch items');
-      }
-      const data = await response.json();
+      const data = await rewardService.getAllItems();
       return data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error);
     }
   }
 );
+
+import reportRewardService from '../../services/reportRewardService';
 
 export const addItem = createAsyncThunk(
   'items/addItem',
   async (item, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/items', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(item),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to add item');
-      }
-      const data = await response.json();
+      const data = await reportRewardService.createReport(item);
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
