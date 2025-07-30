@@ -32,6 +32,26 @@ const rewardService = {
     }
   },
 
+  // Get all items
+  getAllItems: async () => {
+    try {
+      const response = await axios.get('https://moringa-lost-found-api.onrender.com/items');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to fetch items' };
+    }
+  },
+
+  // Get item by ID
+  getItemById: async (itemId) => {
+    try {
+      const response = await axios.get(`https://moringa-lost-found-api.onrender.com/items/${itemId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to fetch item details' };
+    }
+  },
+
   // Initiate M-Pesa payment
   initiatePayment: async (rewardId) => {
     try {

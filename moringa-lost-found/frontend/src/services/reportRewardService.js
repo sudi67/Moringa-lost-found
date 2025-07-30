@@ -13,6 +13,16 @@ class ReportRewardService {
     }
   }
 
+  // Create a new report
+  async createReport(reportData) {
+    try {
+      const response = await axios.post('https://moringa-lost-found-api.onrender.com/reports/create', reportData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  }
+
   // Initiate MPESA payment
   async initiateMpesaPayment(reportId) {
     try {

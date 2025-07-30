@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import './App.css';
@@ -12,10 +12,15 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Profile from './components/Profile';
 import { setShowReportModal } from './store/slices/uiSlice';
+import { fetchCurrentUser } from './store/slices/authSlice';
 
 function App() {
   const showReportModal = useSelector((state) => state.ui.showReportModal);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
 
   const handleReportClick = () => {
     dispatch(setShowReportModal(true));
