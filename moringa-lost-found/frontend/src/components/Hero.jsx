@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Hero.css';
 
 const Hero = ({ onReportClick }) => {
@@ -22,9 +23,12 @@ const Hero = ({ onReportClick }) => {
             <button className="btn btn-secondary" onClick={scrollToSearch}>
               <i className="fas fa-search"></i> Search Items
             </button>
+            {/* Added Make Payment Link */}
+            <Link to="/pay" className="btn btn-primary" style={{ marginLeft: '10px' }}>
+              Make Payment
+            </Link>
           </div>
         </div>
-        {/* Removed empty div */}
       </div>
     </section>
   );

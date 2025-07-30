@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Profile from './components/Profile';
+import MpesaPayment from './components/MpesaPayment'; // ← new import
 import { setShowReportModal } from './store/slices/uiSlice';
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
     <Router>
       <div className="App">
         <Navbar onReportClick={handleReportClick} />
-        
+
         <Routes>
           <Route path="/" element={
             <>
@@ -42,8 +43,9 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<SignIn />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/pay" element={<MpesaPayment />} /> {/* ← added */}
         </Routes>
-        
+
         {showReportModal && (
           <ReportModal onClose={handleCloseModal} />
         )}
