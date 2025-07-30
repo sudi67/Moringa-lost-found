@@ -17,5 +17,5 @@ class Reward(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    item = db.relationship('Item', backref='rewards')
+    item = db.relationship('Item', overlaps="rewards")
     # User relationships are defined in User model

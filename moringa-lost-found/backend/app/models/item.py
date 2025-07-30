@@ -15,8 +15,8 @@ class Item(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
     # Relationships
-    claims = db.relationship('Claim', backref='item', lazy=True)
-    comments = db.relationship('Comment', backref='item', lazy=True)
+    claims = db.relationship('Claim', lazy=True)
+    comments = db.relationship('Comment', lazy=True)
     rewards = db.relationship('Reward', lazy=True)
 
     def __repr__(self):

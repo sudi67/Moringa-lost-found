@@ -29,8 +29,8 @@ class Claim(db.Model):
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
-    item = db.relationship('Item', backref='claims')
-    claimant = db.relationship('User', backref='claims', overlaps="claims,claimant")
+    item = db.relationship('Item', overlaps="claims")
+    # claimant relationship is defined in User model
 
     def __repr__(self):
         return f'<Claim {self.id} by User {self.claimant_id} for Item {self.item_id}>'
@@ -44,7 +44,7 @@ class Comment(db.Model):
     comment_text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.utcnow())
 
-    item = db.relationship('Item', backref='comments')
+    item = db.relationship('Item', overlaps="comments")
     author = db.relationship('User')
 
     def __repr__(self):

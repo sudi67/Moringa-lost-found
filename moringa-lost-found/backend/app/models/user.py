@@ -15,7 +15,7 @@ class User(db.Model):
     # Relationships
     reported_items = db.relationship('Item', backref='reporter', lazy=True, foreign_keys='Item.reported_by')
     reports = db.relationship('Report', backref='user', lazy=True)
-    claims = db.relationship('Claim', backref=db.backref('claimant_user', lazy=True), lazy=True, foreign_keys='Claim.claimant_id', overlaps="claims,claimant_user")
+    claims = db.relationship('Claim', backref='claimant', lazy=True, foreign_keys='Claim.claimant_id')
     # comments relationship removed to avoid conflicts
     rewards_as_finder = db.relationship('Reward', foreign_keys='Reward.finder_user_id', lazy=True)
     rewards_as_owner = db.relationship('Reward', foreign_keys='Reward.owner_user_id', lazy=True)
