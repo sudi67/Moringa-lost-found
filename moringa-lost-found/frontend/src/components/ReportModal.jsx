@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useContext } from 'react'; // Import useContext
+import { useDispatch, useSelector } from 'react-redux';
+import { AuthContext } from '../context/AuthContext'; // Assuming AuthContext is defined elsewhere
 import { addItem } from '../store/slices/itemsSlice';
 import { setShowReportModal } from '../store/slices/uiSlice';
 import reportRewardService from '../services/reportRewardService';
@@ -7,6 +8,8 @@ import './ReportModal.css';
 
 const ReportModal = () => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useContext(AuthContext); // Consume the context
   const [formData, setFormData] = useState({
     title: '',
     status: '',
@@ -27,19 +30,19 @@ const ReportModal = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { // Made function async for potential async calls later
     e.preventDefault();
     setError(null);
-
+    
     // Add an authentication check here
-    if (!isAuthenticated) { // Assuming `isAuthenticated` is a state or context variable
+    if (!isAuthenticated) {
       console.error('User not authenticated');
       // Redirect to login or show a message
       return;
     }
 
     setLoading(true);
-
+    
     // Prepare payload for backend API
     const payload = {
       title: formData.title,
