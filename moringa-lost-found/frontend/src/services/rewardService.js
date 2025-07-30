@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/rewards';
+const API_URL = 'https://moringa-lost-found-api.onrender.com/items/<item_id>/rewards';
 
 // Create axios instance with auth header
 const authAxios = axios.create({
@@ -86,7 +86,8 @@ const rewardService = {
   getRewardsByItemId: async (itemId) => {
     try {
       // Note: baseURL is API_URL which is /api/rewards, so we use full URL here
-      const response = await axios.get(`http://localhost:5000/api/items/${itemId}/rewards`);
+      const response = await axios.get(`https://moringa-lost-found-api.onrender.com/items/<item_id>/rewards`);
+     
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch rewards for item' };

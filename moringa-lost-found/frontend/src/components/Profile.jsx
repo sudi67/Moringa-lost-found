@@ -60,10 +60,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="profile-section">
-        <h3>My Rewards</h3>
-        <RewardList />
-      </div>
+
 
       <div className="profile-section">
         <h3>My Lost Items</h3>
