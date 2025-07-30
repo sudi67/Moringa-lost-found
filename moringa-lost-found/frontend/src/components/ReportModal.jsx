@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'; // Import useContext
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AuthContext } from '../context/AuthContext'; // Assuming AuthContext is defined elsewhere
 import { addItem } from '../store/slices/itemsSlice';
 import { setShowReportModal } from '../store/slices/uiSlice';
@@ -8,8 +8,9 @@ import './ReportModal.css';
 
 const ReportModal = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { isAuthenticated } = useContext(AuthContext); // Consume the context
+  // Removed unused user variable
+  const authContext = useContext(AuthContext); // Consume the context
+  const isAuthenticated = authContext?.isAuthenticated || false; // Safely access isAuthenticated
   const [formData, setFormData] = useState({
     title: '',
     status: '',
@@ -102,8 +103,8 @@ const ReportModal = () => {
           </div>
           <div className="form-group">
             <label>Status</label>
-            <select 
-              name="status" 
+            <select
+              name="status"
               value={formData.status}
               onChange={handleChange}
               required
@@ -116,8 +117,8 @@ const ReportModal = () => {
 
           <div className="form-group">
             <label>Category</label>
-            <select 
-              name="category" 
+            <select
+              name="category"
               value={formData.category}
               onChange={handleChange}
               required
@@ -134,19 +135,19 @@ const ReportModal = () => {
 
           <div className="form-group">
             <label>Description</label>
-            <textarea 
+            <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows="4" 
+              rows="4"
               required
             />
           </div>
 
           <div className="form-group">
             <label>Location</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="location"
               value={formData.location}
               onChange={handleChange}
@@ -156,23 +157,23 @@ const ReportModal = () => {
 
           <div className="form-group">
             <label>Image URL</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="image_url"
               value={formData.image_url}
               onChange={handleChange}
               placeholder="Enter image URL"
             />
             {formData.image_url && (
-              <img 
-                src={formData.image_url} 
-                alt="Preview" 
-                style={{ 
-                  maxWidth: '100%', 
-                  maxHeight: '200px', 
+              <img
+                src={formData.image_url}
+                alt="Preview"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '200px',
                   marginTop: '10px',
                   borderRadius: '8px'
-                }} 
+                }}
               />
             )}
           </div>
