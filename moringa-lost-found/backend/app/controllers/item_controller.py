@@ -42,6 +42,7 @@ def get_item(item_id):
         "id": item.id,
         "name": item.name,
         "status": item.status,
+        "approval_status": item.approval_status,
         "description": item.description,
         "location_found": item.location_found,
         "reported_by": item.reported_by,
@@ -99,11 +100,13 @@ def delete_item(item_id):
 
 @item_bp.route('', methods=['GET'])
 def get_all_items():
-    items = Item.query.all()
+    # Only show approved items to regular users
+    items = Item.query.filter_by(approval_status='approved').all()
     result = [{
         "id": item.id,
         "name": item.name,
         "status": item.status,
+        "approval_status": item.approval_status,
         "description": item.description,
         "location_found": item.location_found,
         "reported_by": item.reported_by,
@@ -135,6 +138,7 @@ def get_my_items():
         "id": item.id,
         "name": item.name,
         "status": item.status,
+        "approval_status": item.approval_status,
         "description": item.description,
         "location_found": item.location_found,
         "reported_by": item.reported_by,
@@ -726,4 +730,301 @@ def admin_view_claimed_items():
         "message": f"Found {len(items_data)} claimed items",
         "claimed_items": items_data,
         "total_count": len(items_data)
+    }), 200
+
+@item_bp.route('/admin/pending-items', methods=['OPTIONS'])
+def options_admin_view_pending_items():
+    return '', 200
+
+@item_bp.route('/admin/pending-items', methods=['GET'])
+@jwt_required()
+def admin_view_pending_items():
+    # Check if user is admin
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    # Get all pending items
+    pending_items = Item.query.filter_by(approval_status='pending').all()
+    
+    items_data = []
+    for item in pending_items:
+        # Get reporter information
+        reporter = User.query.get(item.reported_by)
+        reporter_info = {
+            "id": reporter.id,
+            "username": reporter.username,
+            "email": reporter.email
+        } if reporter else None
+        
+        item_data = {
+            "id": item.id,
+            "name": item.name,
+            "description": item.description,
+            "status": item.status,
+            "approval_status": item.approval_status,
+            "location_found": item.location_found,
+            "image_url": item.image_url,
+            "category": item.category,
+            "reported_by": reporter_info,
+            "created_at": item.created_at.isoformat()
+        }
+        items_data.append(item_data)
+    
+    return jsonify({
+        "message": f"Found {len(items_data)} pending items",
+        "pending_items": items_data,
+        "total_count": len(items_data)
+    }), 200
+
+@item_bp.route('/admin/<int:item_id>/approve', methods=['OPTIONS'])
+def options_admin_approve_item(item_id):
+    return '', 200
+
+@item_bp.route('/admin/<int:item_id>/approve', methods=['PUT'])
+@jwt_required()
+def admin_approve_item(item_id):
+    # Check if user is admin
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    item = Item.query.get_or_404(item_id)
+    
+    # Update approval status to approved
+    item.approval_status = 'approved'
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Item approved successfully",
+        "item": {
+            "id": item.id,
+            "name": item.name,
+            "description": item.description,
+            "status": item.status,
+            "approval_status": item.approval_status,
+            "location_found": item.location_found,
+            "image_url": item.image_url,
+            "category": item.category,
+            "reported_by": item.reported_by,
+            "created_at": item.created_at.isoformat()
+        }
+    }), 200
+
+@item_bp.route('/admin/<int:item_id>/reject', methods=['OPTIONS'])
+def options_admin_reject_item(item_id):
+    return '', 200
+
+@item_bp.route('/admin/<int:item_id>/reject', methods=['PUT'])
+@jwt_required()
+def admin_reject_item(item_id):
+    # Check if user is admin
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    item = Item.query.get_or_404(item_id)
+    
+    # Update approval status to rejected
+    item.approval_status = 'rejected'
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Item rejected successfully",
+        "item": {
+            "id": item.id,
+            "name": item.name,
+            "description": item.description,
+            "status": item.status,
+            "approval_status": item.approval_status,
+            "location_found": item.location_found,
+            "image_url": item.image_url,
+            "category": item.category,
+            "reported_by": item.reported_by,
+            "created_at": item.created_at.isoformat()
+        }
+    }), 200
+
+@item_bp.route('/admin/claims/<int:claim_id>/approve', methods=['OPTIONS'])
+def options_admin_approve_claim(claim_id):
+    return '', 200
+
+@item_bp.route('/admin/claims/<int:claim_id>/approve', methods=['PUT'])
+@jwt_required()
+def admin_approve_claim(claim_id):
+    # Check if user is admin
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    claim = Claim.query.get_or_404(claim_id)
+    item = Item.query.get_or_404(claim.item_id)
+    
+    # Update claim status to approved
+    claim.status = 'approved'
+    
+    # Update item status to claimed
+    item.status = 'claimed'
+    
+    # Reject all other pending claims for this item
+    other_claims = Claim.query.filter_by(item_id=claim.item_id).filter(Claim.id != claim_id).all()
+    for other_claim in other_claims:
+        if other_claim.status == 'pending':
+            other_claim.status = 'rejected'
+    
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Claim approved successfully",
+        "claim": {
+            "id": claim.id,
+            "item_id": claim.item_id,
+            "claimant_id": claim.claimant_id,
+            "status": claim.status,
+            "created_at": claim.created_at.isoformat()
+        },
+        "item": {
+            "id": item.id,
+            "name": item.name,
+            "status": item.status,
+            "approval_status": item.approval_status
+        }
+    }), 200
+
+@item_bp.route('/admin/claims/<int:claim_id>/reject', methods=['OPTIONS'])
+def options_admin_reject_claim(claim_id):
+    return '', 200
+
+@item_bp.route('/admin/claims/<int:claim_id>/reject', methods=['PUT'])
+@jwt_required()
+def admin_reject_claim(claim_id):
+    # Check if user is admin
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    claim = Claim.query.get_or_404(claim_id)
+    
+    # Update claim status to rejected
+    claim.status = 'rejected'
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Claim rejected successfully",
+        "claim": {
+            "id": claim.id,
+            "item_id": claim.item_id,
+            "claimant_id": claim.claimant_id,
+            "status": claim.status,
+            "created_at": claim.created_at.isoformat()
+        }
+    }), 200
+
+@item_bp.route('/admin/pending-claims', methods=['OPTIONS'])
+def options_admin_view_pending_claims():
+    return '', 200
+
+@item_bp.route('/admin/pending-claims', methods=['GET'])
+@jwt_required()
+def admin_view_pending_claims():
+    # Check if user is admin
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    # Get all pending claims with item and claimant details
+    pending_claims = Claim.query.filter_by(status='pending').all()
+    
+    claims_data = []
+    for claim in pending_claims:
+        # Get item information
+        item = Item.query.get(claim.item_id)
+        item_info = {
+            "id": item.id,
+            "name": item.name,
+            "description": item.description,
+            "status": item.status,
+            "approval_status": item.approval_status,
+            "location_found": item.location_found,
+            "image_url": item.image_url,
+            "category": item.category
+        } if item else None
+        
+        # Get claimant information
+        claimant = User.query.get(claim.claimant_id)
+        claimant_info = {
+            "id": claimant.id,
+            "username": claimant.username,
+            "email": claimant.email
+        } if claimant else None
+        
+        claim_data = {
+            "id": claim.id,
+            "item_id": claim.item_id,
+            "claimant_id": claim.claimant_id,
+            "status": claim.status,
+            "created_at": claim.created_at.isoformat(),
+            "item": item_info,
+            "claimant": claimant_info
+        }
+        claims_data.append(claim_data)
+    
+    return jsonify({
+        "message": f"Found {len(claims_data)} pending claims",
+        "pending_claims": claims_data,
+        "total_count": len(claims_data)
     }), 200

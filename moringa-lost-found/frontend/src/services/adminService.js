@@ -147,6 +147,62 @@ const adminService = {
     } catch (error) {
       throw error.response?.data || { error: 'Failed to remove item' };
     }
+  },
+
+  // Item approval management
+  getPendingItems: async () => {
+    try {
+      const response = await adminAxios.get('/items/admin/pending-items');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to fetch pending items' };
+    }
+  },
+
+  approveItem: async (itemId) => {
+    try {
+      const response = await adminAxios.put(`/items/admin/${itemId}/approve`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to approve item' };
+    }
+  },
+
+  rejectItem: async (itemId) => {
+    try {
+      const response = await adminAxios.put(`/items/admin/${itemId}/reject`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to reject item' };
+    }
+  },
+
+  // Claim approval management
+  getPendingClaims: async () => {
+    try {
+      const response = await adminAxios.get('/items/admin/pending-claims');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to fetch pending claims' };
+    }
+  },
+
+  approveClaim: async (claimId) => {
+    try {
+      const response = await adminAxios.put(`/items/admin/claims/${claimId}/approve`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to approve claim' };
+    }
+  },
+
+  rejectClaim: async (claimId) => {
+    try {
+      const response = await adminAxios.put(`/items/admin/claims/${claimId}/reject`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to reject claim' };
+    }
   }
 };
 

@@ -11,6 +11,8 @@ const initialState = {
   inventory: [],
   foundItems: [],
   claimedItems: [],
+  pendingItems: [],
+  pendingClaims: [],
 };
 
 // Admin authentication
@@ -185,6 +187,111 @@ export const removeItemFromInventory = createAsyncThunk(
   }
 );
 
+// Item approval management
+export const fetchPendingItems = createAsyncThunk(
+  'admin/fetchPendingItems',
+  async (_, thunkAPI) => {
+    try {
+      return await adminService.getPendingItems();
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const approveItem = createAsyncThunk(
+  'admin/approveItem',
+  async (itemId, thunkAPI) => {
+    try {
+      const result = await adminService.approveItem(itemId);
+      // Refresh pending items after approval
+      thunkAPI.dispatch(fetchPendingItems());
+      return result;
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const rejectItem = createAsyncThunk(
+  'admin/rejectItem',
+  async (itemId, thunkAPI) => {
+    try {
+      const result = await adminService.rejectItem(itemId);
+      // Refresh pending items after rejection
+      thunkAPI.dispatch(fetchPendingItems());
+      return result;
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Claim approval management
+export const fetchPendingClaims = createAsyncThunk(
+  'admin/fetchPendingClaims',
+  async (_, thunkAPI) => {
+    try {
+      return await adminService.getPendingClaims();
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const approveClaim = createAsyncThunk(
+  'admin/approveClaim',
+  async (claimId, thunkAPI) => {
+    try {
+      const result = await adminService.approveClaim(claimId);
+      // Refresh pending claims and claimed items after approval
+      thunkAPI.dispatch(fetchPendingClaims());
+      thunkAPI.dispatch(fetchClaimedItems());
+      return result;
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const rejectClaim = createAsyncThunk(
+  'admin/rejectClaim',
+  async (claimId, thunkAPI) => {
+    try {
+      const result = await adminService.rejectClaim(claimId);
+      // Refresh pending claims after rejection
+      thunkAPI.dispatch(fetchPendingClaims());
+      return result;
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const adminSlice = createSlice({
   name: 'admin',
   initialState,
@@ -289,6 +396,84 @@ export const adminSlice = createSlice({
       // Fetch claimed items
       .addCase(fetchClaimedItems.fulfilled, (state, action) => {
         state.claimedItems = action.payload.claimed_items || [];
+      })
+      // Fetch pending items
+      .addCase(fetchPendingItems.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchPendingItems.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.pendingItems = action.payload.pending_items || [];
+      })
+      .addCase(fetchPendingItems.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      // Approve item
+      .addCase(approveItem.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(approveItem.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+      })
+      .addCase(approveItem.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      // Reject item
+      .addCase(rejectItem.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(rejectItem.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+      })
+      .addCase(rejectItem.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      // Fetch pending claims
+      .addCase(fetchPendingClaims.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchPendingClaims.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.pendingClaims = action.payload.pending_claims || [];
+      })
+      .addCase(fetchPendingClaims.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      // Approve claim
+      .addCase(approveClaim.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(approveClaim.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+      })
+      .addCase(approveClaim.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      // Reject claim
+      .addCase(rejectClaim.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(rejectClaim.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+      })
+      .addCase(rejectClaim.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });

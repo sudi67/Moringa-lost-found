@@ -11,11 +11,17 @@ import {
   fetchClaimedItems,
   addItemToInventory,
   removeItemFromInventory,
+  fetchPendingItems,
+  approveItem,
+  rejectItem,
+  fetchPendingClaims,
+  approveClaim,
+  rejectClaim,
 } from '../store/slices/adminSlice';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('reports');
+  const [activeTab, setActiveTab] = useState('pending-items');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -28,6 +34,8 @@ const AdminDashboard = () => {
     inventory,
     foundItems,
     claimedItems,
+    pendingItems,
+    pendingClaims,
   } = useSelector((state) => state.admin);
 
   useEffect(() => {
@@ -48,6 +56,8 @@ const AdminDashboard = () => {
       dispatch(fetchInventory());
       dispatch(fetchFoundItems());
       dispatch(fetchClaimedItems());
+      dispatch(fetchPendingItems());
+      dispatch(fetchPendingClaims());
     }
   }, [admin, dispatch]);
 
@@ -66,6 +76,22 @@ const AdminDashboard = () => {
 
   const handleRemoveFromInventory = (itemId) => {
     dispatch(removeItemFromInventory(itemId));
+  };
+
+  const handleApproveItem = (itemId) => {
+    dispatch(approveItem(itemId));
+  };
+
+  const handleRejectItem = (itemId) => {
+    dispatch(rejectItem(itemId));
+  };
+
+  const handleApproveClaim = (claimId) => {
+    dispatch(approveClaim(claimId));
+  };
+
+  const handleRejectClaim = (claimId) => {
+    dispatch(rejectClaim(claimId));
   };
 
   const formatDate = (dateString) => {
@@ -107,6 +133,20 @@ const AdminDashboard = () => {
       <div className="admin-content">
         <div className="admin-tabs">
           <button
+            className={`tab-btn ${activeTab === 'pending-items' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending-items')}
+          >
+            <i className="fas fa-clock"></i>
+            Pending Items ({pendingItems.length})
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'pending-claims' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending-claims')}
+          >
+            <i className="fas fa-hand-paper"></i>
+            Pending Claims ({pendingClaims.length})
+          </button>
+          <button
             className={`tab-btn ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveTab('reports')}
           >
@@ -137,6 +177,126 @@ const AdminDashboard = () => {
         </div>
 
         <div className="tab-content">
+          {activeTab === 'pending-items' && (
+            <div className="pending-items-section">
+              <h2>Pending Items for Approval</h2>
+              {isLoading ? (
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Loading pending items...</p>
+                </div>
+              ) : pendingItems.length === 0 ? (
+                <div className="empty-state">
+                  <i className="fas fa-clock"></i>
+                  <p>No pending items</p>
+                </div>
+              ) : (
+                <div className="items-grid">
+                  {pendingItems.map((item) => (
+                    <div key={item.id} className="item-card pending">
+                      <div className="item-header">
+                        <h3>{item.name}</h3>
+                        <span className={`status-badge ${item.approval_status}`}>
+                          {item.approval_status}
+                        </span>
+                      </div>
+                      <div className="item-details">
+                        <p><strong>Category:</strong> {item.category}</p>
+                        <p><strong>Location:</strong> {item.location_found}</p>
+                        <p><strong>Description:</strong> {item.description}</p>
+                        <p><strong>Reported by:</strong> {item.reported_by?.email}</p>
+                        <p><strong>Date:</strong> {formatDate(item.created_at)}</p>
+                      </div>
+                      {item.image_url && (
+                        <div className="item-image">
+                          <img src={item.image_url} alt={item.name} />
+                        </div>
+                      )}
+                      <div className="item-actions">
+                        <button
+                          onClick={() => handleApproveItem(item.id)}
+                          className="approve-btn"
+                          disabled={isLoading}
+                        >
+                          <i className="fas fa-check"></i>
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRejectItem(item.id)}
+                          className="reject-btn"
+                          disabled={isLoading}
+                        >
+                          <i className="fas fa-times"></i>
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'pending-claims' && (
+            <div className="pending-claims-section">
+              <h2>Pending Claims for Approval</h2>
+              {isLoading ? (
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Loading pending claims...</p>
+                </div>
+              ) : pendingClaims.length === 0 ? (
+                <div className="empty-state">
+                  <i className="fas fa-hand-paper"></i>
+                  <p>No pending claims</p>
+                </div>
+              ) : (
+                <div className="claims-grid">
+                  {pendingClaims.map((claim) => (
+                    <div key={claim.id} className="claim-card pending">
+                      <div className="claim-header">
+                        <h3>Claim for: {claim.item?.name}</h3>
+                        <span className={`status-badge ${claim.status}`}>
+                          {claim.status}
+                        </span>
+                      </div>
+                      <div className="claim-details">
+                        <p><strong>Item Category:</strong> {claim.item?.category}</p>
+                        <p><strong>Item Location:</strong> {claim.item?.location_found}</p>
+                        <p><strong>Item Description:</strong> {claim.item?.description}</p>
+                        <p><strong>Claimant:</strong> {claim.claimant?.email}</p>
+                        <p><strong>Claim Date:</strong> {formatDate(claim.created_at)}</p>
+                      </div>
+                      {claim.item?.image_url && (
+                        <div className="item-image">
+                          <img src={claim.item.image_url} alt={claim.item.name} />
+                        </div>
+                      )}
+                      <div className="claim-actions">
+                        <button
+                          onClick={() => handleApproveClaim(claim.id)}
+                          className="approve-btn"
+                          disabled={isLoading}
+                        >
+                          <i className="fas fa-check"></i>
+                          Approve Claim
+                        </button>
+                        <button
+                          onClick={() => handleRejectClaim(claim.id)}
+                          className="reject-btn"
+                          disabled={isLoading}
+                        >
+                          <i className="fas fa-times"></i>
+                          Reject Claim
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'reports' && (
             <div className="reports-section">
               <h2>Pending Reports</h2>
