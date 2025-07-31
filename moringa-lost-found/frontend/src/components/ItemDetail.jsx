@@ -1,5 +1,6 @@
 import React from 'react';
 import ItemRewards from './ItemRewards';
+import Comments from './Comments';
 import './ItemDetail.css';
 
 const ItemDetail = ({ item, onClose }) => {
@@ -29,6 +30,7 @@ const ItemDetail = ({ item, onClose }) => {
           </div>
         </div>
         <ItemRewards itemId={item.id} />
+        <Comments itemId={item.id} />
       </div>
     </div>
   );

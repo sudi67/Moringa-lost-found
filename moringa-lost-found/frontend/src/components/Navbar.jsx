@@ -46,7 +46,11 @@ const Navbar = ({ onReportClick }) => {
             <>
               <Link to="/login" className="nav-link">Sign In</Link>
               <Link to="/signup" className="nav-link">Sign Up</Link>
-              <Link to="/pay" className="nav-link">Make Payment</Link> {/* ✅ Also visible to guests */}
+              <Link to="/pay" className="nav-link">Make Payment</Link>
+              <Link to="/admin/login" className="nav-link admin-link">
+                <i className="fas fa-user-shield"></i>
+                Admin
+              </Link>
             </>
           )}
         </div>

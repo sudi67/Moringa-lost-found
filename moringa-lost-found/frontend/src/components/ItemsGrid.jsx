@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchItems } from '../store/slices/itemsSlice';
+import ItemDetail from './ItemDetail';
 import './ItemsGrid.css';
 
 const ItemsGrid = () => {
   const { items, loading, error } = useSelector((state) => state.items);
   const dispatch = useDispatch();
   const [visibleItems, setVisibleItems] = useState(6);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     dispatch(fetchItems());
@@ -14,6 +16,14 @@ const ItemsGrid = () => {
 
   const loadMoreItems = () => {
     setVisibleItems(prev => prev + 6);
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedItem(null);
   };
 
   if (loading) {
@@ -67,7 +77,13 @@ const ItemsGrid = () => {
                   <span className="item-location">{item.location}</span>
                   <span className="item-date">{new Date(item.date).toLocaleDateString()}</span>
                 </div>
-                <button className="btn btn-outline">Contact Owner</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleItemClick(item)}
+                >
+                  <i className="fas fa-eye"></i>
+                  View Details & Comments
+                </button>
               </div>
             </div>
           ))}
@@ -79,6 +95,14 @@ const ItemsGrid = () => {
               Load More Items
             </button>
           </div>
+        )}
+
+        {/* ItemDetail Modal */}
+        {selectedItem && (
+          <ItemDetail
+            item={selectedItem}
+            onClose={handleCloseModal}
+          />
         )}
       </div>
     </section>
