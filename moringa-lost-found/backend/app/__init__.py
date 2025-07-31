@@ -15,11 +15,12 @@ def create_app():
     # Configure CORS - allow all origins for development
     CORS(app, origins=[
         "http://localhost:3000",
-        "http://localhost:5173", 
+        "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:8080",
         "https://moringa-lost-found.onrender.com",
-        "https://moringa-lost-found-api.onrender.com"
+        "https://moringa-lost-found-api.onrender.com",
+        "https://moringa-lost-found.vercel.app"
     ], supports_credentials=True)
 
     # Initialize extensions
