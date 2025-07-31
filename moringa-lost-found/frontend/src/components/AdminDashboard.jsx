@@ -454,7 +454,7 @@ const AdminDashboard = () => {
                       <div className="item-details">
                         <p><strong>Location:</strong> {item.location}</p>
                         <p><strong>Description:</strong> {item.description}</p>
-                        <p><strong>Claimed by:</strong> {item.claimed_by}</p>
+                        <p><strong>Claimed by:</strong> {item.claimed_by?.email || item.claimed_by?.username || 'Unknown'}</p>
                         <p><strong>Claimed:</strong> {formatDate(item.claimed_at)}</p>
                       </div>
                       {item.image_url && (

@@ -343,6 +343,8 @@ export const adminSlice = createSlice({
         state.inventory = [];
         state.foundItems = [];
         state.claimedItems = [];
+        state.pendingItems = [];
+        state.pendingClaims = [];
       })
       // Fetch current admin
       .addCase(fetchCurrentAdmin.pending, (state) => {
@@ -365,12 +367,14 @@ export const adminSlice = createSlice({
       })
       .addCase(fetchAllReports.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.reports = action.payload;
+        state.reports = Array.isArray(action.payload) ? action.payload :
+                       action.payload?.lost_items || action.payload?.reports || [];
       })
       .addCase(fetchAllReports.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        state.reports = [];
       })
       // Approve report
       .addCase(approveReport.pending, (state) => {
@@ -409,6 +413,7 @@ export const adminSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        state.pendingItems = [];
       })
       // Approve item
       .addCase(approveItem.pending, (state) => {
@@ -448,6 +453,7 @@ export const adminSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        state.pendingClaims = [];
       })
       // Approve claim
       .addCase(approveClaim.pending, (state) => {
