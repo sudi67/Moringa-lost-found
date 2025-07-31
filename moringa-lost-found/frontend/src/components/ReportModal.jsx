@@ -29,11 +29,10 @@ const ReportModal = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => { // Made function async for potential async calls later
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     
-    // Add an authentication check here
     // Check if authContext is available and user is authenticated
     if (!authContext || !authContext.isAuthenticated) {
       console.error('User not authenticated');
@@ -51,7 +50,6 @@ const ReportModal = () => {
     category: formData.category,
     location: formData.location,
     image_url: formData.image_url,
-    // Additional fields can be added if backend supports
   };
 
     try {
@@ -72,7 +70,17 @@ const ReportModal = () => {
       // Close modal on success
       dispatch(setShowReportModal(false));
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Failed to create report');
+      console.error('Report submission error:', err);
+      if (err.response) {
+        // Server responded with error status
+        setError(`Server error: ${err.response.data?.error || err.response.statusText || 'Unknown server error'}`);
+      } else if (err.request) {
+        // Request was made but no response received
+        setError('Network error: Unable to connect to server. Please check your connection.');
+      } else {
+        // Something else happened
+        setError(`Error: ${err.message || 'Failed to create report'}`);
+      }
     } finally {
       setLoading(false);
     }

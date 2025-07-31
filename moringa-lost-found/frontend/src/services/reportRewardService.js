@@ -36,12 +36,12 @@ class ReportRewardService {
       }
       const authToken = localStorage.getItem('token');
       const payload = {
-        name: reportData.name,
+        name: reportData.title,
         description: reportData.description,
+        status: reportData.item_type,
         location_found: reportData.location,
         category: reportData.category,
-        reported_by: user.id,
-        // Add any other necessary fields from reportData
+        // reported_by will be set by the backend from the JWT token
       };
       const config = {
         headers: {
@@ -53,7 +53,16 @@ class ReportRewardService {
       return response.data;
     } catch (error) {
       console.error('Error creating item:', error);
-      throw error.response?.data || error.message;
+      if (error.response) {
+        // Server responded with error status
+        throw new Error(`Server error: ${error.response.data?.error || error.response.statusText || 'Unknown server error'}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        throw new Error('Network error: Unable to connect to server. Please check your connection.');
+      } else {
+        // Something else happened
+        throw new Error(`Error: ${error.message || 'Failed to create report'}`);
+      }
     }
   }
 
