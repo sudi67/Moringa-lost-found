@@ -87,7 +87,7 @@ const adminService = {
 
   getAllReports: async () => {
     try {
-      const response = await adminAxios.get('/reports');
+      const response = await adminAxios.get('/reports/admin/reports');
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to fetch reports' };
