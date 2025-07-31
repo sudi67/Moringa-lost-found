@@ -137,14 +137,14 @@ const AdminDashboard = () => {
             onClick={() => setActiveTab('pending-items')}
           >
             <i className="fas fa-clock"></i>
-            Pending Items ({pendingItems.length})
+            Pending Items ({pendingItems?.length || 0})
           </button>
           <button
             className={`tab-btn ${activeTab === 'pending-claims' ? 'active' : ''}`}
             onClick={() => setActiveTab('pending-claims')}
           >
             <i className="fas fa-hand-paper"></i>
-            Pending Claims ({pendingClaims.length})
+            Pending Claims ({pendingClaims?.length || 0})
           </button>
           <button
             className={`tab-btn ${activeTab === 'reports' ? 'active' : ''}`}
@@ -185,14 +185,14 @@ const AdminDashboard = () => {
                   <div className="spinner"></div>
                   <p>Loading pending items...</p>
                 </div>
-              ) : pendingItems.length === 0 ? (
+              ) : (pendingItems?.length || 0) === 0 ? (
                 <div className="empty-state">
                   <i className="fas fa-clock"></i>
                   <p>No pending items</p>
                 </div>
               ) : (
                 <div className="items-grid">
-                  {pendingItems.map((item) => (
+                  {(pendingItems || []).map((item) => (
                     <div key={item.id} className="item-card pending">
                       <div className="item-header">
                         <h3>{item.name}</h3>
@@ -245,14 +245,14 @@ const AdminDashboard = () => {
                   <div className="spinner"></div>
                   <p>Loading pending claims...</p>
                 </div>
-              ) : pendingClaims.length === 0 ? (
+              ) : (pendingClaims?.length || 0) === 0 ? (
                 <div className="empty-state">
                   <i className="fas fa-hand-paper"></i>
                   <p>No pending claims</p>
                 </div>
               ) : (
                 <div className="claims-grid">
-                  {pendingClaims.map((claim) => (
+                  {(pendingClaims || []).map((claim) => (
                     <div key={claim.id} className="claim-card pending">
                       <div className="claim-header">
                         <h3>Claim for: {claim.item?.name}</h3>
