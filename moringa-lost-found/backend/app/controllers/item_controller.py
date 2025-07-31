@@ -113,6 +113,38 @@ def get_all_items():
     } for item in items]
     return jsonify(result), 200
 
+@item_bp.route('/my-items', methods=['OPTIONS'])
+def options_get_my_items():
+    return '', 200
+
+@item_bp.route('/my-items', methods=['GET'])
+@jwt_required()
+def get_my_items():
+    current_user_id = get_jwt_identity()
+    
+    # Convert string user ID to integer if needed
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    # Get all items reported by the current user
+    items = Item.query.filter_by(reported_by=current_user_id).all()
+    
+    result = [{
+        "id": item.id,
+        "name": item.name,
+        "status": item.status,
+        "description": item.description,
+        "location_found": item.location_found,
+        "reported_by": item.reported_by,
+        "created_at": item.created_at.isoformat() if item.created_at else None,
+        "image_url": item.image_url,
+        "category": item.category
+    } for item in items]
+    
+    return jsonify(result), 200
+
 @item_bp.route('/<int:item_id>/claim', methods=['OPTIONS'])
 def options_claim_item(item_id):
     return '', 200

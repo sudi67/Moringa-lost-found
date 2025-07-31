@@ -15,6 +15,18 @@ export const fetchItems = createAsyncThunk(
   }
 );
 
+export const fetchMyItems = createAsyncThunk(
+  'items/fetchMyItems',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await rewardService.getMyItems();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 import reportRewardService from '../../services/reportRewardService';
 
 export const addItem = createAsyncThunk(
@@ -72,6 +84,7 @@ const itemsSlice = createSlice({
   name: 'items',
   initialState: {
     items: [],
+    myItems: [],
     loading: false,
     error: null,
   },
@@ -134,6 +147,19 @@ const itemsSlice = createSlice({
         state.items = state.items.filter(item => item.id !== action.payload);
       })
       .addCase(deleteItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch my items
+      .addCase(fetchMyItems.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyItems.fulfilled, (state, action) => {
+        state.loading = false;
+        state.myItems = action.payload;
+      })
+      .addCase(fetchMyItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

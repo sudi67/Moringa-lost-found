@@ -1,6 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { useDispatch } from 'react-redux';
-import { AuthContext } from '../context/AuthContext';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from '../store/slices/itemsSlice';
 import { setShowReportModal } from '../store/slices/uiSlice';
 import reportRewardService from '../services/reportRewardService';
@@ -8,8 +7,8 @@ import './ReportModal.css';
 
 const ReportModal = () => {
   const dispatch = useDispatch();
-    const authContext = useContext(AuthContext); // Consume the context
-      const [formData, setFormData] = useState({
+  const auth = useSelector((state) => state.auth);
+  const [formData, setFormData] = useState({
         title: '',
         status: '',
         category: '',
@@ -33,8 +32,8 @@ const ReportModal = () => {
     e.preventDefault();
     setError(null);
     
-    // Check if authContext is available and user is authenticated
-    if (!authContext || !authContext.isAuthenticated) {
+    // Check if user is authenticated using Redux state
+    if (!auth.user) {
       console.error('User not authenticated');
       setError('You must be logged in to report an item.');
       return;
@@ -56,16 +55,19 @@ const ReportModal = () => {
       // Call backend API to create report
       const response = await reportRewardService.createReport(payload);
 
-      // Optionally update Redux store with new item
-      const newItem = {
-        id: response.item.id,
-        description: response.item.description,
-        status: response.item.status,
-        location_found: response.item.location_found,
-        image_url: response.item.image_url,
-        created_at: response.item.created_at
-      };
-      dispatch(addItem(newItem));
+      // Check if response has item data, otherwise just close modal
+      if (response.item) {
+        // Optionally update Redux store with new item
+        const newItem = {
+          id: response.item.id,
+          description: response.item.description,
+          status: response.item.status,
+          location_found: response.item.location_found,
+          image_url: response.item.image_url,
+          created_at: response.item.created_at
+        };
+        dispatch(addItem(newItem));
+      }
 
       // Close modal on success
       dispatch(setShowReportModal(false));

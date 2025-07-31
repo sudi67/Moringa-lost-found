@@ -42,6 +42,16 @@ const rewardService = {
     }
   },
 
+  // Get user's reported items
+  getMyItems: async () => {
+    try {
+      const response = await authAxios.get('/items/my-items');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'Failed to fetch user items' };
+    }
+  },
+
   // Get item by ID
   getItemById: async (itemId) => {
     try {

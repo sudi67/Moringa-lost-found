@@ -2,21 +2,24 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { fetchMyRewards } from '../store/slices/rewardSlice';
-import RewardList from './RewardList';
+import { fetchMyItems } from '../store/slices/itemsSlice';
 import './Profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { rewardsGiven, rewardsReceived, loading } = useSelector((state) => state.rewards);
+  const { myItems, loading: itemsLoading } = useSelector((state) => state.items);
 
   useEffect(() => {
     if (user) {
-      dispatch(fetchMyRewards());
+      dispatch(fetchMyItems());
     }
   }, [dispatch, user]);
+
+  // Separate items by status
+  const lostItems = myItems.filter(item => item.status === 'lost');
+  const foundItems = myItems.filter(item => item.status === 'found');
 
   const handleLogout = () => {
     dispatch(logout());
@@ -64,12 +67,72 @@ const Profile = () => {
 
       <div className="profile-section">
         <h3>My Lost Items</h3>
-        <p className="empty-state">No lost items reported yet.</p>
+        {itemsLoading ? (
+          <p>Loading items...</p>
+        ) : lostItems.length > 0 ? (
+          <div className="items-grid">
+            {lostItems.map(item => (
+              <div key={item.id} className="item-card">
+                <div className="item-image">
+                  <img
+                    src={item.image_url || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
+                    alt={item.name}
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+                    }}
+                  />
+                </div>
+                <div className="item-content">
+                  <h4>{item.name}</h4>
+                  <p>{item.description}</p>
+                  <div className="item-details">
+                    <span className="item-category">{item.category}</span>
+                    <span className="item-location">{item.location_found}</span>
+                    <span className="item-date">{new Date(item.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <span className={`item-status ${item.status}`}>{item.status}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">No lost items reported yet.</p>
+        )}
       </div>
 
       <div className="profile-section">
         <h3>My Found Items</h3>
-        <p className="empty-state">No found items reported yet.</p>
+        {itemsLoading ? (
+          <p>Loading items...</p>
+        ) : foundItems.length > 0 ? (
+          <div className="items-grid">
+            {foundItems.map(item => (
+              <div key={item.id} className="item-card">
+                <div className="item-image">
+                  <img
+                    src={item.image_url || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
+                    alt={item.name}
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+                    }}
+                  />
+                </div>
+                <div className="item-content">
+                  <h4>{item.name}</h4>
+                  <p>{item.description}</p>
+                  <div className="item-details">
+                    <span className="item-category">{item.category}</span>
+                    <span className="item-location">{item.location_found}</span>
+                    <span className="item-date">{new Date(item.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <span className={`item-status ${item.status}`}>{item.status}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">No found items reported yet.</p>
+        )}
       </div>
 
       <div className="profile-section">

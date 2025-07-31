@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import reportRewardService from '../services/reportRewardService';
 import rewardService from '../services/rewardService';
 import ItemDetail from './ItemDetail';
 import './ReportItems.css';
@@ -18,7 +17,7 @@ const ReportItems = () => {
         // Use reportRewardService to get reports (POST endpoint is for creating reports)
         const data = await rewardService.getAllItems();
         setItems(data);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch items');
       } finally {
         setLoading(false);
@@ -33,27 +32,14 @@ const ReportItems = () => {
     try {
       const item = await rewardService.getItemById(itemId);
       setSelectedItem(item);
-    } catch (err) {
+    } catch {
       setError('Failed to fetch item details');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReportSubmit = async (reportData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await reportRewardService.createReport(reportData);
-      // Optionally refresh items after report submission
-      const data = await rewardService.getAllItems();
-      setItems(data);
-    } catch (err) {
-      setError('Failed to submit report');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Removed unused handleReportSubmit function
 
   const handleCloseDetail = () => {
     setSelectedItem(null);
@@ -74,9 +60,12 @@ const ReportItems = () => {
         {items.length === 0 && <p>No items found.</p>}
         {items.map(item => (
           <div key={item.id} className="item-card" onClick={() => handleItemClick(item.id)}>
-            <img 
-              src={item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='} 
-              alt={item.name} 
+            <img
+              src={item.image_url || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
+              alt={item.name}
+              onError={(e) => {
+                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNEY0NkU1Ci8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+              }}
               className="item-image"
             />
             <div className="item-info">
