@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react'; // Import useContext
+import React, { useState, useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import { AuthContext } from '../context/AuthContext'; // Assuming AuthContext is defined elsewhere
+import { AuthContext } from '../context/AuthContext';
 import { addItem } from '../store/slices/itemsSlice';
 import { setShowReportModal } from '../store/slices/uiSlice';
 import reportRewardService from '../services/reportRewardService';
@@ -8,20 +8,18 @@ import './ReportModal.css';
 
 const ReportModal = () => {
   const dispatch = useDispatch();
-  // Removed unused user variable
-  const authContext = useContext(AuthContext); // Consume the context
-  const isAuthenticated = authContext?.isAuthenticated || false; // Safely access isAuthenticated
-  const [formData, setFormData] = useState({
-    title: '',
-    status: '',
-    category: '',
-    description: '',
-    location: '',
-    image_url: '',
-    rewardAmount: '',
-    rewardPhone: '',
-    addReward: false
-  });
+    const authContext = useContext(AuthContext); // Consume the context
+      const [formData, setFormData] = useState({
+        title: '',
+        status: '',
+        category: '',
+        description: '',
+        location: '',
+        image_url: '',
+        rewardAmount: '',
+        rewardPhone: '',
+        addReward: false
+      });
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,24 +34,25 @@ const ReportModal = () => {
     setError(null);
     
     // Add an authentication check here
-    if (!isAuthenticated) {
+    // Check if authContext is available and user is authenticated
+    if (!authContext || !authContext.isAuthenticated) {
       console.error('User not authenticated');
-      // Redirect to login or show a message
+      setError('You must be logged in to report an item.');
       return;
     }
 
     setLoading(true);
-    
-    // Prepare payload for backend API
-    const payload = {
-      title: formData.title,
-      description: formData.description,
-      item_type: formData.status,
-      category: formData.category,
-      location: formData.location,
-      image_url: formData.image_url,
-      // Additional fields can be added if backend supports
-    };
+  
+  // Prepare payload for backend API
+  const payload = {
+    title: formData.title,
+    description: formData.description,
+    item_type: formData.status,
+    category: formData.category,
+    location: formData.location,
+    image_url: formData.image_url,
+    // Additional fields can be added if backend supports
+  };
 
     try {
       // Call backend API to create report
