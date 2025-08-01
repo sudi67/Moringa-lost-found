@@ -6,3 +6,4 @@ from .user import User
 from .item import Item
 from .report import Report, Claim, Comment
 from .reward import Reward
+from .notification import Notification

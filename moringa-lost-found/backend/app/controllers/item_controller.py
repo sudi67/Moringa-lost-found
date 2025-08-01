@@ -4,9 +4,25 @@ from app.models.item import Item
 from app.models.user import User
 from app.models.report import Claim, Comment
 from app.models.reward import Reward
+from app.models.notification import Notification
 from app.extensions import db
 
 item_bp = Blueprint('items', __name__, url_prefix='/items')
+
+def create_notification(user_id, title, message, notification_type='info', item_id=None):
+    """
+    Helper function to create a notification for a user
+    """
+    notification = Notification(
+        user_id=user_id,
+        title=title,
+        message=message,
+        type=notification_type,
+        item_id=item_id
+    )
+    db.session.add(notification)
+    db.session.commit()
+    return notification
 
 @item_bp.route('', methods=['OPTIONS'])
 def options_add_item():
@@ -147,6 +163,41 @@ def get_my_items():
         "category": item.category
     } for item in items]
     
+    return jsonify(result), 200
+
+@item_bp.route('/admin/pending', methods=['GET'])
+@jwt_required()
+def get_pending_items():
+    """
+    Get all items pending approval (admin only)
+    """
+    current_user_id = get_jwt_identity()
+    try:
+        current_user_id = int(current_user_id)
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid user identity"}), 401
+    
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.role != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+    
+    # Get all pending items
+    items = Item.query.filter_by(approval_status='pending').all()
+    result = [{
+        "id": item.id,
+        "name": item.name,
+        "status": item.status,
+        "approval_status": item.approval_status,
+        "description": item.description,
+        "location_found": item.location_found,
+        "reported_by": item.reported_by,
+        "created_at": item.created_at.isoformat() if item.created_at else None,
+        "image_url": item.image_url,
+        "category": item.category
+    } for item in items]
     return jsonify(result), 200
 
 @item_bp.route('/<int:item_id>/claim', methods=['OPTIONS'])
@@ -813,6 +864,19 @@ def admin_approve_item(item_id):
     item.approval_status = 'approved'
     db.session.commit()
     
+    # Create notification for the user who reported the item
+    try:
+        create_notification(
+            user_id=item.reported_by,
+            title="Item Approved",
+            message=f"Great news! Your item '{item.name}' has been approved by an administrator and is now visible to other users.",
+            notification_type='success',
+            item_id=item.id
+        )
+    except Exception as e:
+        # Log the error but don't fail the approval process
+        print(f"Failed to create notification: {str(e)}")
+    
     return jsonify({
         "message": "Item approved successfully",
         "item": {
@@ -852,9 +916,26 @@ def admin_reject_item(item_id):
     
     item = Item.query.get_or_404(item_id)
     
+    # Get rejection reason from request data
+    data = request.get_json()
+    rejection_reason = data.get('reason', 'No reason provided') if data else 'No reason provided'
+    
     # Update approval status to rejected
     item.approval_status = 'rejected'
     db.session.commit()
+    
+    # Create notification for the user who reported the item
+    try:
+        create_notification(
+            user_id=item.reported_by,
+            title="Item Rejected",
+            message=f"Your item '{item.name}' has been rejected by an administrator. Reason: {rejection_reason}",
+            notification_type='error',
+            item_id=item.id
+        )
+    except Exception as e:
+        # Log the error but don't fail the rejection process
+        print(f"Failed to create notification: {str(e)}")
     
     return jsonify({
         "message": "Item rejected successfully",
@@ -869,7 +950,8 @@ def admin_reject_item(item_id):
             "category": item.category,
             "reported_by": item.reported_by,
             "created_at": item.created_at.isoformat()
-        }
+        },
+        "reason": rejection_reason
     }), 200
 
 @item_bp.route('/admin/claims/<int:claim_id>/approve', methods=['OPTIONS'])
