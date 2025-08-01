@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'https://moringa-lost-found-api.onrender.com';
+import { API_BASE_URL } from '../config/api.js';
 
 // Create axios instance with auth header
 const authAxios = axios.create({

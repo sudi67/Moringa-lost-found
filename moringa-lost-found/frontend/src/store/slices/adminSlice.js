@@ -223,9 +223,9 @@ export const approveItem = createAsyncThunk(
 
 export const rejectItem = createAsyncThunk(
   'admin/rejectItem',
-  async (itemId, thunkAPI) => {
+  async ({ itemId, reason }, thunkAPI) => {
     try {
-      const result = await adminService.rejectItem(itemId);
+      const result = await adminService.rejectItem(itemId, reason);
       // Refresh pending items after rejection
       thunkAPI.dispatch(fetchPendingItems());
       return result;

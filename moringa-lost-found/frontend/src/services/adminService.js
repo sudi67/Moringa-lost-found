@@ -1,10 +1,12 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'https://moringa-lost-found-api.onrender.com';
+import { API_BASE_URL } from '../config/api.js';
 
 // Create axios instance with auth header for admin
 const adminAxios = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Add token to requests
@@ -25,7 +27,9 @@ const adminService = {
   // Admin authentication
   adminSignup: async (adminData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/admin/signup`, adminData);
+      const response = await axios.post(`${API_BASE_URL}/auth/admin/signup`, adminData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to create admin account' };
@@ -34,7 +38,9 @@ const adminService = {
 
   adminLogin: async (credentials) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/admin/login`, credentials);
+      const response = await axios.post(`${API_BASE_URL}/auth/admin/login`, credentials, {
+        headers: { 'Content-Type': 'application/json' }
+      });
       if (response.data.access_token) {
         localStorage.setItem('adminToken', response.data.access_token);
         
@@ -168,9 +174,11 @@ const adminService = {
     }
   },
 
-  rejectItem: async (itemId) => {
+  rejectItem: async (itemId, reason) => {
     try {
-      const response = await adminAxios.put(`/items/admin/${itemId}/reject`);
+      const response = await adminAxios.put(`/items/admin/${itemId}/reject`, {
+        reason: reason || 'No reason provided'
+      });
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to reject item' };

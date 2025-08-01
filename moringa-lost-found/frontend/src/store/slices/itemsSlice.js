@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { API_ENDPOINTS } from '../../config/api.js';
 
 // Async thunks for API calls
 import rewardService from '../../services/rewardService';

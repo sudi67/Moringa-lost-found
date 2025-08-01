@@ -1,16 +1,16 @@
-import axios from 'axios';
+import apiClient from '../config/axios.js';
 
-const API_URL = 'https://moringa-lost-found-api.onrender.com/auth/';
+const API_URL = '/auth/';
 
 // Register user
 const register = async (userData) => {
-  const response = await axios.post(API_URL + 'signup', userData);
+  const response = await apiClient.post(API_URL + 'signup', userData);
   return response.data;
 };
 
 // Login user
 const login = async (userData) => {
-  const response = await axios.post(API_URL + 'login', userData);
+  const response = await apiClient.post(API_URL + 'login', userData);
   console.log('Login API response:', response.data);
   if (response.data.access_token) {
     localStorage.setItem('token', response.data.access_token);
@@ -30,11 +30,7 @@ const getCurrentUser = async () => {
     return null;
   }
   try {
-    const response = await axios.get(API_URL + 'me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(API_URL + 'me');
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 422) {

@@ -1,19 +1,11 @@
-import axios from 'axios';
+import apiClient from '../config/axios.js';
 import authService from './authService';
-
-const API_URL = 'https://moringa-lost-found-api.onrender.com/reports';
 
 class ReportRewardService {
   // Create reward for report
   async createRewardForReport(reportId, rewardData) {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-      };
-      const response = await axios.post(`${API_URL}/${reportId}/rewards`, rewardData, config);
+      const response = await apiClient.post(`/reports/${reportId}/rewards`, rewardData);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -34,7 +26,6 @@ class ReportRewardService {
           throw new Error('User not authenticated');
         }
       }
-      const authToken = localStorage.getItem('token');
       const payload = {
         name: reportData.title,
         description: reportData.description,
@@ -43,12 +34,7 @@ class ReportRewardService {
         category: reportData.category,
         // reported_by will be set by the backend from the JWT token
       };
-      const config = {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      };
-      const response = await axios.post('https://moringa-lost-found-api.onrender.com/items', payload, config);
+      const response = await apiClient.post('/items', payload);
       console.log('Item created successfully:', response.data);
       return response.data;
     } catch (error) {
@@ -69,13 +55,7 @@ class ReportRewardService {
   // Initiate MPESA payment
   async initiateMpesaPayment(reportId) {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-      };
-      const response = await axios.post(`${API_URL}/${reportId}/initiate-payment`, null, config);
+      const response = await apiClient.post(`/reports/${reportId}/initiate-payment`);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -85,13 +65,7 @@ class ReportRewardService {
   // Get report with reward details
   async getReportWithReward(reportId) {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-      };
-      const response = await axios.get(`${API_URL}/${reportId}`, config);
+      const response = await apiClient.get(`/reports/${reportId}`);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -101,13 +75,7 @@ class ReportRewardService {
   // Get user rewards
   async getUserRewards() {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-      };
-      const response = await axios.get('https://moringa-lost-found-api.onrender.com/reports/my-rewards', config);
+      const response = await apiClient.get('/reports/my-rewards');
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;

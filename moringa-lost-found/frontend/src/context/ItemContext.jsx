@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 // Create context
 export const ItemContext = createContext();
@@ -13,7 +14,7 @@ export const ItemProvider = ({ children }) => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://moringa-lost-found-api.onrender.com/items');
+      const response = await fetch(API_ENDPOINTS.ITEMS);
       const data = await response.json();
       setItems(data);
       setError(null);
@@ -27,7 +28,7 @@ export const ItemProvider = ({ children }) => {
   // Add new item
   const addItem = async (item) => {
     try {
-      const response = await fetch('https://moringa-lost-found-api.onrender.com/items', {
+      const response = await fetch(API_ENDPOINTS.ITEMS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +45,7 @@ export const ItemProvider = ({ children }) => {
   // Update item
   const updateItem = async (id, updatedItem) => {
     try {
-      const response = await fetch(`https://moringa-lost-found-api.onrender.com/items/${id}`, {
+      const response = await fetch(`${API_ENDPOINTS.ITEMS}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +62,7 @@ export const ItemProvider = ({ children }) => {
   // Delete item
   const deleteItem = async (id) => {
     try {
-      await fetch(`https://moringa-lost-found-api.onrender.com/items/${id}`, {
+      await fetch(`${API_ENDPOINTS.ITEMS}/${id}`, {
         method: 'DELETE',
       });
       setItems(prev => prev.filter(item => item.id !== id));

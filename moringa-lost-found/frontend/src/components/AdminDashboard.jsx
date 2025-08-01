@@ -83,7 +83,10 @@ const AdminDashboard = () => {
   };
 
   const handleRejectItem = (itemId) => {
-    dispatch(rejectItem(itemId));
+    const reason = prompt('Please provide a reason for rejecting this item:');
+    if (reason !== null) { // User didn't cancel
+      dispatch(rejectItem({ itemId, reason: reason.trim() || 'No reason provided' }));
+    }
   };
 
   const handleApproveClaim = (claimId) => {
