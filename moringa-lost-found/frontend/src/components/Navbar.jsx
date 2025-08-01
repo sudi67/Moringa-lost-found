@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
+import NotificationBell from './NotificationBell.jsx';
 import './Navbar.css';
 
 const Navbar = ({ onReportClick }) => {
@@ -37,7 +38,9 @@ const Navbar = ({ onReportClick }) => {
           {user ? (
             <>
               <Link to="/profile" className="nav-link">Profile</Link>
+              <Link to="/notifications" className="nav-link">Notifications</Link>
               <Link to="/pay" className="nav-link">Make Payment</Link> {/* ✅ NEW LINK */}
+              <NotificationBell />
               <button onClick={handleLogout} className="nav-link logout-btn">
                 Sign Out
               </button>

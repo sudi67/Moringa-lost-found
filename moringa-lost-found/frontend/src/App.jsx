@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Profile from './components/Profile';
+import NotificationsPage from './components/NotificationsPage';
 import MpesaPayment from './components/MpesaPayment';
 import AdminLogin from './components/AdminLogin';
 import AdminSignup from './components/AdminSignup';
@@ -58,6 +59,7 @@ function AppContent() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/pay" element={<MpesaPayment />} />
         
         {/* Admin Routes */}

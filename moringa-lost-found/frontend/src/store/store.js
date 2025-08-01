@@ -5,6 +5,7 @@ import authReducer from './slices/authSlice';
 import rewardReducer from './slices/rewardSlice';
 import adminReducer from './slices/adminSlice';
 import commentReducer from './slices/commentSlice';
+import notificationReducer from './slices/notificationSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     rewards: rewardReducer,
     admin: adminReducer,
     comments: commentReducer,
+    notifications: notificationReducer,
   },
 });
