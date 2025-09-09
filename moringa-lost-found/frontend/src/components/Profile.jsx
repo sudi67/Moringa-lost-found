@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { fetchMyItems } from '../store/slices/itemsSlice';
+import { fetchClaimedItems } from '../store/slices/adminSlice';
 import './Profile.css';
 
 const Profile = () => {
@@ -10,10 +11,12 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { myItems, loading: itemsLoading } = useSelector((state) => state.items);
+  const { claimedItems, isLoading: claimsLoading } = useSelector((state) => state.admin);
 
   useEffect(() => {
     if (user) {
       dispatch(fetchMyItems());
+      dispatch(fetchClaimedItems());
     }
   }, [dispatch, user]);
 
@@ -62,8 +65,6 @@ const Profile = () => {
           </Link>
         </div>
       </div>
-
-
 
       <div className="profile-section">
         <h3>My Lost Items</h3>
@@ -137,7 +138,23 @@ const Profile = () => {
 
       <div className="profile-section">
         <h3>My Claims</h3>
-        <p className="empty-state">No claims submitted yet.</p>
+        {claimsLoading ? (
+          <p>Loading claims...</p>
+        ) : claimedItems.length > 0 ? (
+          <div className="claims-list">
+            {claimedItems.map((claim) => (
+              <div key={claim.id} className="claim-card">
+                <h4>{claim.item_name || 'Claimed Item'}</h4>
+                <p>Status: <span className={`claim-status ${claim.status}`}>{claim.status}</span></p>
+                {claim.status === 'rejected' && claim.admin_message && (
+                  <p className="claim-rejected-message">Rejection Message: {claim.admin_message}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">No claims submitted yet.</p>
+        )}
       </div>
     </div>
   );

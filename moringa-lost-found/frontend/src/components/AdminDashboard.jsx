@@ -124,7 +124,9 @@ const AdminDashboard = () => {
         <div className="admin-header-content">
           <div className="admin-info">
             <h1>Admin Dashboard</h1>
-            <p>Welcome back, {admin.username || admin.email}</p>
+            <p>
+              Welcome back, {typeof admin.username === 'string' ? admin.username : admin.username?.username || (typeof admin.email === 'string' ? admin.email : admin.email?.email) || 'Admin'}
+            </p>
           </div>
           <button onClick={handleLogout} className="logout-btn">
             <i className="fas fa-sign-out-alt"></i>
